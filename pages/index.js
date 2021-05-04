@@ -16,16 +16,6 @@ export default function Home() {
       <main className={styles.main}>
         <Image src="/static/tenor.gif" alt="loading" width="600" height="600" />
       </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://harshbadhai.me"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Made with ❤ by Harsh, Hritvik , Nischal & Aaditya
-        </a>
-      </footer>
     </div>
   );
 }
