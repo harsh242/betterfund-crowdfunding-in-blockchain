@@ -12,6 +12,7 @@ import {
 } from "@chakra-ui/react";
 
 import NextLink from "next/link";
+import DarkModeSwitch from "./DarkModeSwitch";
 
 export default function NavBar() {
   return (
@@ -40,25 +41,6 @@ export default function NavBar() {
         }}
       >
         <Container as={Flex} maxW={"7xl"} align={"center"}>
-          {/* TODO : ADD DARK MODE TOGGLE
-           <Flex
-            flex={{ base: 1, md: "auto" }}
-            ml={{ base: -2 }}
-            display={{ base: "flex", md: "none" }}
-          >
-            <IconButton
-              onClick={onToggle}
-              icon={
-                isOpen ? (
-                  <CloseIcon w={3} h={3} />
-                ) : (
-                  <HamburgerIcon w={5} h={5} />
-                )
-              }
-              variant={"ghost"}
-              aria-label={"Toggle Navigation"}
-            />
-          </Flex> */}
           <Flex flex={{ base: 1 }} justify={{ base: "center", md: "start" }}>
             <Heading
               textAlign={useBreakpointValue({ base: "center", md: "left" })}
@@ -118,6 +100,7 @@ export default function NavBar() {
             >
               Create Campaign
             </Button>
+            <DarkModeSwitch />
           </Stack>
         </Container>
       </Flex>
