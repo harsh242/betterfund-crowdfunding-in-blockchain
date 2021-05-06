@@ -16,8 +16,6 @@ import {
   Divider,
   Center,
   Img,
-  Stack,
-  Badge,
   Icon,
   chakra,
   Tooltip,
@@ -35,69 +33,72 @@ const data = {
 
 function CampaignCard() {
   return (
-    <Flex w="full" alignItems="center" justifyContent="center">
-      <Box
-        bg={useColorModeValue("white", "gray.800")}
-        maxW="sm"
-        borderWidth="1px"
-        rounded="lg"
-        shadow="lg"
-        position="relative"
-      >
-        <Img
-          src={data.imageURL}
-          alt={`Picture of ${data.name}`}
-          roundedTop="lg"
-        />
+    <Flex w="max" alignItems="center" justifyContent="center" cursor="pointer">
+      <NextLink href="/campaign/1">
+        <Box
+          bg={useColorModeValue("white", "gray.800")}
+          maxW={{ base: "xs", md: "sm" }}
+          borderWidth="1px"
+          rounded="lg"
+          shadow="lg"
+          position="relative"
+        >
+          <Img
+            src={data.imageURL}
+            alt={`Picture of ${data.name}`}
+            roundedTop="lg"
+          />
 
-        <Box p="6">
-          <Flex
-            mt="1"
-            justifyContent="space-between"
-            alignContent="center"
-            py={2}
-          >
-            <Box
-              fontSize="2xl"
-              fontWeight="semibold"
-              as="h4"
-              lineHeight="tight"
-              isTruncated
+          <Box p="6">
+            <Flex
+              mt="1"
+              justifyContent="space-between"
+              alignContent="center"
+              py={2}
             >
-              {data.name}
-            </Box>
-            <Tooltip
-              label="Contribute"
-              bg="white"
-              placement={"top"}
-              color={"gray.800"}
-              fontSize={"1.2em"}
-            >
-              <chakra.a href={"#"} display={"flex"}>
-                <Icon
-                  as={FaDonate}
-                  h={7}
-                  w={7}
-                  alignSelf={"center"}
-                  color={"teal.400"}
-                />
-              </chakra.a>
-            </Tooltip>
-          </Flex>
-          <Flex justifyContent="space-between" alignContent="center" py={2}>
-            <Text color={"gray.500"}>{data.description}</Text>{" "}
-          </Flex>
-          <Flex alignContent="center" py={4}>
-            {" "}
-            <Text color={"gray.500"} pr={2}>
-              by
-            </Text>{" "}
-            <Heading size="base" isTruncated>
-              {data.id}
-            </Heading>
-          </Flex>
+              <Box
+                fontSize="2xl"
+                fontWeight="semibold"
+                as="h4"
+                lineHeight="tight"
+                isTruncated
+              >
+                {data.name}
+              </Box>
+
+              <Tooltip
+                label="Contribute"
+                bg={useColorModeValue("white", "gray.700")}
+                placement={"top"}
+                color={useColorModeValue("gray.800", "white")}
+                fontSize={"1.2em"}
+              >
+                <chakra.a display={"flex"}>
+                  <Icon
+                    as={FaDonate}
+                    h={7}
+                    w={7}
+                    alignSelf={"center"}
+                    color={"teal.400"}
+                  />{" "}
+                </chakra.a>
+              </Tooltip>
+            </Flex>
+            <Flex justifyContent="space-between" alignContent="center" py={2}>
+              <Text color={"gray.500"}>{data.description}</Text>{" "}
+            </Flex>
+            <Flex alignContent="center" py={4}>
+              {" "}
+              <Text color={"gray.500"} pr={2}>
+                by
+              </Text>{" "}
+              <Heading size="base" isTruncated>
+                {data.id}
+              </Heading>
+            </Flex>
+          </Box>
         </Box>
-      </Box>
+      </NextLink>
     </Flex>
   );
 }
@@ -114,7 +115,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
-        <Container p={12} maxW={"7xl"} align={"left"}>
+        <Container p={{ base: "4", md: "12" }} maxW={"7xl"} align={"left"}>
           {" "}
           <Heading
             textAlign={useBreakpointValue({ base: "left" })}
@@ -139,13 +140,12 @@ export default function Home() {
             <NextLink href="/campaign/new">Create Campaign</NextLink>
           </Button>
         </Container>
-        <Container p={12} maxW={"7xl"}>
+        <Container p={{ base: "4", md: "12" }} maxW={"7xl"}>
           <Heading as="h2" size="lg">
             Open Campaigns 👇
           </Heading>
           <Divider marginTop="4" />
           <SimpleGrid columns={{ base: 1, md: 3 }} spacing={10} py={8}>
-            <CampaignCard /> <CampaignCard />
             <CampaignCard />
           </SimpleGrid>
         </Container>

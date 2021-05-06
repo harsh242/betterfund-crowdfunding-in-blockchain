@@ -46,7 +46,7 @@ export default function New() {
                 <FormLabel>Minimum Contribution</FormLabel>
                 <InputGroup>
                   {" "}
-                  <Input type="number" /> <InputRightAddon children="ETH" />
+                  <Input type="number" /> <InputRightAddon children="WEI" />
                 </InputGroup>
               </FormControl>
               <FormControl id="campaign-name">
