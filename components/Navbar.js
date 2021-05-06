@@ -45,13 +45,13 @@ export default function NavBar() {
             <Heading
               textAlign={useBreakpointValue({ base: "center", md: "left" })}
               fontFamily={"heading"}
-              color={useColorModeValue("pink.800", "white")}
+              color={useColorModeValue("teal.800", "white")}
               as="h2"
               size="lg"
             >
               <Box
                 as={"span"}
-                color={useColorModeValue("pink.400", "pink.300")}
+                color={useColorModeValue("teal.400", "teal.300")}
                 position={"relative"}
                 zIndex={10}
                 _after={{
@@ -61,7 +61,7 @@ export default function NavBar() {
                   bottom: 0,
                   w: "full",
                   h: "30%",
-                  bg: useColorModeValue("pink.100", "pink.900"),
+                  bg: useColorModeValue("teal.100", "teal.900"),
                   zIndex: -1,
                 }}
               >
@@ -92,10 +92,10 @@ export default function NavBar() {
               fontSize={"md"}
               fontWeight={600}
               color={"white"}
-              bg={"pink.400"}
+              bg={"teal.400"}
               href={"#"}
               _hover={{
-                bg: "pink.300",
+                bg: "teal.300",
               }}
             >
               Create Campaign
