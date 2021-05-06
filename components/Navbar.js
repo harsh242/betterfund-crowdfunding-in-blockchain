@@ -98,7 +98,7 @@ export default function NavBar() {
                 bg: "teal.300",
               }}
             >
-              Create Campaign
+              <NextLink href="/campaign/new">Create Campaign</NextLink>
             </Button>
             <DarkModeSwitch />
           </Stack>

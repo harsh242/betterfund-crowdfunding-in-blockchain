@@ -1,12 +1,106 @@
 import Head from "next/head";
-import Image from "next/image";
+import NextImage from "next/image";
+import NextLink from "next/link";
 import styles from "../styles/Home.module.css";
+import { motion } from "framer-motion";
 import {
   Heading,
   useBreakpointValue,
   useColorModeValue,
   Text,
+  Button,
+  Flex,
+  Container,
+  SimpleGrid,
+  Box,
+  Divider,
+  Center,
+  Img,
+  Stack,
+  Badge,
+  Icon,
+  chakra,
+  Tooltip,
 } from "@chakra-ui/react";
+
+import { FaDonate } from "react-icons/fa";
+const data = {
+  imageURL:
+    "https://images.unsplash.com/photo-1572635196237-14b3f281503f?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=4600&q=80",
+  name: "Crypto Covid Fund",
+  description:
+    "A campaign by Indian Crypto Community to raise money for Covid Issues",
+  id: "0x5d7676dB6119Ed1F6C696419058310D16a734dA9",
+};
+
+function CampaignCard() {
+  return (
+    <Flex w="full" alignItems="center" justifyContent="center">
+      <Box
+        bg={useColorModeValue("white", "gray.800")}
+        maxW="sm"
+        borderWidth="1px"
+        rounded="lg"
+        shadow="lg"
+        position="relative"
+      >
+        <Img
+          src={data.imageURL}
+          alt={`Picture of ${data.name}`}
+          roundedTop="lg"
+        />
+
+        <Box p="6">
+          <Flex
+            mt="1"
+            justifyContent="space-between"
+            alignContent="center"
+            py={2}
+          >
+            <Box
+              fontSize="2xl"
+              fontWeight="semibold"
+              as="h4"
+              lineHeight="tight"
+              isTruncated
+            >
+              {data.name}
+            </Box>
+            <Tooltip
+              label="Contribute"
+              bg="white"
+              placement={"top"}
+              color={"gray.800"}
+              fontSize={"1.2em"}
+            >
+              <chakra.a href={"#"} display={"flex"}>
+                <Icon
+                  as={FaDonate}
+                  h={7}
+                  w={7}
+                  alignSelf={"center"}
+                  color={"teal.400"}
+                />
+              </chakra.a>
+            </Tooltip>
+          </Flex>
+          <Flex justifyContent="space-between" alignContent="center" py={2}>
+            <Text color={"gray.500"}>{data.description}</Text>{" "}
+          </Flex>
+          <Flex alignContent="center" py={4}>
+            {" "}
+            <Text color={"gray.500"} pr={2}>
+              by
+            </Text>{" "}
+            <Heading size="base" isTruncated>
+              {data.id}
+            </Heading>
+          </Flex>
+        </Box>
+      </Box>
+    </Flex>
+  );
+}
 
 export default function Home() {
   return (
@@ -20,18 +114,41 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
-        <Heading
-          textAlign={useBreakpointValue({ base: "center" })}
-          fontFamily={"heading"}
-          color={useColorModeValue("gray.800", "white")}
-          as="h1"
-          size="lg"
-          py={4}
-        >
-          Crowdfunding using the powers of Crypto & Blockchain 😄{" "}
-        </Heading>
-
-        <Image src="/static/tenor.gif" alt="loading" width="400" height="400" />
+        <Container p={12} maxW={"7xl"} align={"left"}>
+          {" "}
+          <Heading
+            textAlign={useBreakpointValue({ base: "left" })}
+            fontFamily={"heading"}
+            color={useColorModeValue("gray.800", "white")}
+            as="h1"
+            py={4}
+          >
+            Crowdfunding using the powers of Crypto & Blockchain 😄{" "}
+          </Heading>
+          <Button
+            display={{ sm: "inline-flex" }}
+            fontSize={"md"}
+            fontWeight={600}
+            color={"white"}
+            bg={"teal.400"}
+            href={"#"}
+            _hover={{
+              bg: "teal.300",
+            }}
+          >
+            <NextLink href="/campaign/new">Create Campaign</NextLink>
+          </Button>
+        </Container>
+        <Container p={12} maxW={"7xl"}>
+          <Heading as="h2" size="lg">
+            Open Campaigns 👇
+          </Heading>
+          <Divider marginTop="4" />
+          <SimpleGrid columns={{ base: 1, md: 3 }} spacing={10} py={8}>
+            <CampaignCard /> <CampaignCard />
+            <CampaignCard />
+          </SimpleGrid>
+        </Container>
       </main>
     </div>
   );
