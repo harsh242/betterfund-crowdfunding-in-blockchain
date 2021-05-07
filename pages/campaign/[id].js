@@ -27,10 +27,14 @@ function StatsCard(props) {
     <Stat
       px={{ base: 2, md: 4 }}
       py={"5"}
-      shadow={"xl"}
+      shadow={"sm"}
       border={"1px solid"}
       borderColor={"gray.500"}
       rounded={"lg"}
+      transition={"transform 0.3s ease"}
+      _hover={{
+        transform: "translateY(-5px)",
+      }}
     >
       <Tooltip
         label={info}
@@ -82,7 +86,7 @@ export default function CampaignSingle() {
             maxW={"7xl"}
             columns={{ base: 1, md: 2 }}
             spacing={{ base: 10, lg: 32 }}
-            py={{ base:6 }}
+            py={{ base: 6 }}
           >
             <Stack spacing={{ base: 6 }}>
               <Heading

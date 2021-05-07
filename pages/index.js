@@ -33,7 +33,10 @@ const data = {
 
 function CampaignCard() {
   return (
-    <Flex w="max" alignItems="center" justifyContent="center" cursor="pointer">
+    <Flex w="max" alignItems="center" justifyContent="center" cursor="pointer"   transition={"transform 0.3s ease"}
+      _hover={{
+        transform: "translateY(-8px)",
+      }}>
       <NextLink href="/campaign/1">
         <Box
           bg={useColorModeValue("white", "gray.800")}
