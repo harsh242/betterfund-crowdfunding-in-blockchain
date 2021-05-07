@@ -19,9 +19,24 @@ import {
   chakra,
   Tooltip,
   Spacer,
+  Table,
+  Thead,
+  Tbody,
+  Tfoot,
+  Tr,
+  Th,
+  Td,
+  TableCaption,
+  Stat,
+  StatLabel,
+  StatNumber,
+  StatHelpText,
+  StatArrow,
+  StatGroup,
 } from "@chakra-ui/react";
 
 export default function Requests() {
+  const str = "0x5d7676dB6119Ed1F6C696419058310D16a734dA9";
   return (
     <div>
       <Head>
@@ -65,6 +80,64 @@ export default function Requests() {
               </Button>
             </Box>
           </Flex>{" "}
+        </Container>
+        <Container px={{ base: "4", md: "12" }} maxW={"7xl"} align={"left"}>
+          <Divider />
+          <Box overflowX="auto">
+            <Table variant="striped">
+              <TableCaption textAlign="left">Found 3 Requests</TableCaption>
+              <Thead>
+                <Tr>
+                  <Th>ID</Th>
+                  <Th w="30%">Description</Th>
+                  <Th isNumeric>Amount</Th>
+                  <Th maxW="12%" isTruncated>
+                    Recipient Wallet Address
+                  </Th>
+                  <Th>Approval Count </Th>
+                  <Th>Approve </Th>
+                  <Th>Finalize </Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                <Tr>
+                  <Td>0</Td>
+                  <Td>For Oxygen Supply in Delhi</Td>
+                  <Td isNumeric>25.4 ETH</Td>
+                  <Td>{str.substr(0, 10) + "..."}</Td>
+                  <Td>0/2</Td>
+                  <Td>
+                    {" "}
+                    <Button
+                      colorScheme="yellow"
+                      variant="outline"
+                      _hover={{
+                        bg: "yellow.600",
+                        color: "white",
+                      }}
+                    >
+                      <NextLink href="/campaign/requests/new">Approve</NextLink>
+                    </Button>
+                  </Td>
+                  <Td>
+                    {" "}
+                    <Button
+                      colorScheme="green"
+                      variant="outline"
+                      _hover={{
+                        bg: "green.600",
+                        color: "white",
+                      }}
+                    >
+                      <NextLink href="/campaign/requests/new">
+                        Finalize
+                      </NextLink>
+                    </Button>
+                  </Td>
+                </Tr>
+              </Tbody>
+            </Table>
+          </Box>
         </Container>
       </main>
     </div>
