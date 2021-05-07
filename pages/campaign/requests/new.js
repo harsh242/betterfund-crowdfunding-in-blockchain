@@ -18,6 +18,7 @@ import {
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { ArrowBackIcon } from "@chakra-ui/icons";
+
 export default function NewRequest() {
   return (
     <div>
@@ -30,7 +31,7 @@ export default function NewRequest() {
         <Stack spacing={8} mx={"auto"} maxW={"2xl"} py={12} px={6}>
           <Text fontSize={"lg"} color={"teal.400"}>
             <ArrowBackIcon />
-            <NextLink href="/"> Back to Campaign</NextLink>
+            <NextLink href="/"> Back to Requests</NextLink>
           </Text>
           <Stack>
             <Heading fontSize={"4xl"}>Create a Withdrawal Request 💸</Heading>

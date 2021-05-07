@@ -20,6 +20,7 @@ import {
   useColorModeValue,
   Tooltip,
 } from "@chakra-ui/react";
+import NextLink from "next/link";
 
 function StatsCard(props) {
   const { title, stat, info } = props;
@@ -223,7 +224,9 @@ export default function CampaignSingle() {
                       boxShadow: "xl",
                     }}
                   >
-                    View Withdrawal Requests
+                    <NextLink href="/campaign/requests/requests">
+                      View Withdrawal Requests
+                    </NextLink>
                   </Button>
                   <Text fontSize={"sm"}>
                     * You can see where these funds are being used & if you have
