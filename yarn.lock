@@ -903,10 +903,10 @@
     "@ethersproject/properties" "^5.1.0"
     "@ethersproject/strings" "^5.1.0"
 
-"@fontsource/space-grotesk@^4.2.2":
-  version "4.2.2"
-  resolved "https://registry.yarnpkg.com/@fontsource/space-grotesk/-/space-grotesk-4.2.2.tgz#fbbf64227b215e8a18dc77d0cf25937d7661a1db"
-  integrity sha512-ODOOn/wlA3QMmDg71zr4hNqDlD89+SnpUCuR8iiIH0Fz3nEiZ0wjNww8NW914oszUxibRLkn+6O/q4wBFOq0cg==
+"@fontsource/space-grotesk@^4.3.0":
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/@fontsource/space-grotesk/-/space-grotesk-4.3.0.tgz#f755a150e9aae0456bd931edf02462f037ed35b2"
+  integrity sha512-9BcpXeomd75xJvYpw3yJBzBERtYpXeGfl3m2WHmMzqcsA7ISZNSHM76uqj6KtpDxs83kQty6MbpvQiPxKX0K/A==
 
 "@hapi/accept@5.0.1":
   version "5.0.1"
