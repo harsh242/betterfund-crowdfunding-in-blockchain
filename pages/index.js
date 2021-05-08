@@ -1,4 +1,5 @@
 import Head from "next/head";
+import { useEffect, useState } from "react";
 import NextImage from "next/image";
 import NextLink from "next/link";
 import styles from "../styles/Home.module.css";
@@ -14,12 +15,15 @@ import {
   SimpleGrid,
   Box,
   Divider,
-  Center,
+  Skeleton,
   Img,
   Icon,
   chakra,
   Tooltip,
 } from "@chakra-ui/react";
+
+import factory from "../smart-contract/factory";
+import Campaign from "../smart-contract/campaign";
 
 import { FaDonate } from "react-icons/fa";
 const data = {
@@ -33,86 +37,107 @@ const data = {
 
 function CampaignCard({ name, description, id, imageURL }) {
   return (
-    <Flex
-      w="max"
-      alignItems="center"
-      justifyContent="center"
-      cursor="pointer"
-      transition={"transform 0.3s ease"}
-      _hover={{
-        transform: "translateY(-8px)",
-      }}
-    >
-      <NextLink href="/campaign/1">
-        <Box
-          bg={useColorModeValue("white", "gray.800")}
-          maxW={{ base: "xs", md: "sm" }}
-          borderWidth="1px"
-          rounded="lg"
-          shadow="lg"
-          position="relative"
-        >
-          <Img
-            src={data.imageURL}
-            alt={`Picture of ${data.name}`}
-            roundedTop="lg"
-          />
+    <NextLink href={`/campaign/${id}`}>
+      <Box
+        bg={useColorModeValue("white", "gray.800")}
+        maxW={{ base: "xs", md: "sm" }}
+        borderWidth="1px"
+        rounded="lg"
+        shadow="lg"
+        position="relative"
+        alignItems="center"
+        justifyContent="center"
+        cursor="pointer"
+        transition={"transform 0.3s ease"}
+        _hover={{
+          transform: "translateY(-8px)",
+        }}
+      >
+        <Img src={imageURL} alt={`Picture of ${name}`} roundedTop="lg" />
 
-          <Box p="6">
-            <Flex
-              mt="1"
-              justifyContent="space-between"
-              alignContent="center"
-              py={2}
+        <Box p="6">
+          <Flex
+            mt="1"
+            justifyContent="space-between"
+            alignContent="center"
+            py={2}
+          >
+            <Box
+              fontSize="2xl"
+              fontWeight="semibold"
+              as="h4"
+              lineHeight="tight"
+              isTruncated
             >
-              <Box
-                fontSize="2xl"
-                fontWeight="semibold"
-                as="h4"
-                lineHeight="tight"
-                isTruncated
-              >
-                {data.name}
-              </Box>
+              {name}
+            </Box>
 
-              <Tooltip
-                label="Contribute"
-                bg={useColorModeValue("white", "gray.700")}
-                placement={"top"}
-                color={useColorModeValue("gray.800", "white")}
-                fontSize={"1.2em"}
-              >
-                <chakra.a display={"flex"}>
-                  <Icon
-                    as={FaDonate}
-                    h={7}
-                    w={7}
-                    alignSelf={"center"}
-                    color={"teal.400"}
-                  />{" "}
-                </chakra.a>
-              </Tooltip>
-            </Flex>
-            <Flex justifyContent="space-between" alignContent="center" py={2}>
-              <Text color={"gray.500"}>{data.description}</Text>{" "}
-            </Flex>
-            <Flex alignContent="center" py={4}>
-              {" "}
-              <Text color={"gray.500"} pr={2}>
-                by
-              </Text>{" "}
-              <Heading size="base" isTruncated>
-                {data.id}
-              </Heading>
-            </Flex>
-          </Box>
+            <Tooltip
+              label="Contribute"
+              bg={useColorModeValue("white", "gray.700")}
+              placement={"top"}
+              color={useColorModeValue("gray.800", "white")}
+              fontSize={"1.2em"}
+            >
+              <chakra.a display={"flex"}>
+                <Icon
+                  as={FaDonate}
+                  h={7}
+                  w={7}
+                  alignSelf={"center"}
+                  color={"teal.400"}
+                />{" "}
+              </chakra.a>
+            </Tooltip>
+          </Flex>
+          <Flex justifyContent="space-between" alignContent="center" py={2}>
+            <Text color={"gray.500"} isTruncated>
+              {description}
+            </Text>{" "}
+          </Flex>
+          <Flex alignContent="center" py={4}>
+            {" "}
+            <Text color={"gray.500"} pr={2}>
+              by
+            </Text>{" "}
+            <Heading size="base" isTruncated>
+              {id}
+            </Heading>
+          </Flex>
         </Box>
-      </NextLink>
-    </Flex>
+      </Box>
+    </NextLink>
   );
 }
 
 export default function Home() {
+  const [campaignList, setCampaignList] = useState([]);
+
+  async function getSummary() {
+    try {
+      const campaigns = await factory.methods.getDeployedCampaigns().call();
+
+      console.log(campaigns);
+
+      const summary = await Promise.all(
+        campaigns.map((campaign, i) =>
+          Campaign(campaigns[i]).methods.getSummary().call()
+        )
+      );
+
+      console.log("summary ", summary);
+
+      setCampaignList(summary);
+      return summary;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  useEffect(() => {
+    getSummary();
+  }, []);
+
   return (
     <div>
       <Head>
@@ -154,9 +179,29 @@ export default function Home() {
             Open Campaigns 👇
           </Heading>
           <Divider marginTop="4" />
-          <SimpleGrid columns={{ base: 1, md: 3 }} spacing={10} py={8}>
-            <CampaignCard />
-          </SimpleGrid>
+
+          {campaignList.length > 0 ? (
+            <SimpleGrid columns={{ base: 1, md: 3 }} spacing={10} py={8}>
+              {campaignList.map((el) => {
+                return (
+                  <div key={el[4]}>
+                    <CampaignCard
+                      name={el[5]}
+                      description={el[6]}
+                      id={el[4]}
+                      imageURL={el[7]}
+                    />
+                  </div>
+                );
+              })}
+            </SimpleGrid>
+          ) : (
+            <SimpleGrid columns={{ base: 1, md: 3 }} spacing={10} py={8}>
+              <Skeleton height="20rem" />
+              <Skeleton height="20rem" />
+              <Skeleton height="20rem" />
+            </SimpleGrid>
+          )}
         </Container>
       </main>
     </div>

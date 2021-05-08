@@ -125,17 +125,30 @@ export default function NewCampaign() {
                 ) : null}
 
                 <Stack spacing={10}>
-                  <Button
-                    bg={"teal.400"}
-                    color={"white"}
-                    _hover={{
-                      bg: "teal.500",
-                    }}
-                    isLoading={formState.isSubmitting}
-                    type="submit"
-                  >
-                    Create
-                  </Button>
+                  {wallet.status === "connected" ? (
+                    <Button
+                      bg={"teal.400"}
+                      color={"white"}
+                      _hover={{
+                        bg: "teal.500",
+                      }}
+                      isLoading={formState.isSubmitting}
+                      type="submit"
+                    >
+                      Create
+                    </Button>
+                  ) : (
+                    <Button
+                      color={"white"}
+                      bg={"teal.400"}
+                      _hover={{
+                        bg: "teal.300",
+                      }}
+                      onClick={() => wallet.connect()}
+                    >
+                      Connect Wallet{" "}
+                    </Button>
+                  )}
                 </Stack>
               </Stack>
             </form>
