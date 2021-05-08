@@ -4,6 +4,7 @@ import NavBar from "../components/Navbar";
 import Footer from "../components/Footer";
 
 import "@fontsource/space-grotesk";
+import "@fontsource/space-grotesk.css";
 
 const theme = extendTheme({
   fonts: {
