@@ -30,11 +30,11 @@ contract Campaign {
   string public CampaignName;
   string public CampaignDescription;
   string public imageUrl;
-  uint public targetToAchive;
+  uint public targetToAchieve;
   address[] public contributers;
   mapping(address => bool) public approvers;
   uint public approversCount;
-  uint public profit;
+
 
   modifier restricted() {
       require(msg.sender == manager);
@@ -47,7 +47,7 @@ contract Campaign {
       CampaignName=name;
       CampaignDescription=description;
       imageUrl=image;
-      targetToAchive=target;
+      targetToAchieve=target;
   }
 
   function contibute() public payable {
@@ -87,12 +87,7 @@ contract Campaign {
 
   }
 
-  function getProfit(uint p) public restricted {
-      uint profitPer = p/contributers.length;
-      for(uint i=0;i<contributers.length;i++){
-          contributers[i].transfer(profitPer);
-      }
-  }
+
     function getSummary() public view returns (uint,uint,uint,uint,address,string,string,string,uint) {
         return(
             minimunContribution,
@@ -103,7 +98,7 @@ contract Campaign {
             CampaignName,
             CampaignDescription,
             imageUrl,
-            targetToAchive
+            targetToAchieve
           );
     }
 
