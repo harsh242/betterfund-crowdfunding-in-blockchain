@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Head from "next/head";
 import {
   Flex,
@@ -6,19 +6,62 @@ import {
   FormControl,
   FormLabel,
   Input,
-  Checkbox,
   Stack,
-  Link,
   Button,
   Heading,
   Text,
   useColorModeValue,
   InputRightAddon,
   InputGroup,
+  Alert,
+  AlertIcon,
+  AlertDescription,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { ArrowBackIcon } from "@chakra-ui/icons";
-export default function New() {
+import { useForm } from "react-hook-form";
+
+import factory from "../../smart-contract/factory";
+import web3 from "../../smart-contract/web3";
+
+import { useRouter } from "next/router";
+import { useWallet } from "use-wallet";
+
+export default function NewCampaign() {
+  const { handleSubmit, errors, register, formState } = useForm();
+  const router = useRouter();
+  const [error, setError] = useState("");
+  const wallet = useWallet();
+
+  async function onSubmit(data) {
+    console.log(
+      data.minimumContribution,
+      data.campaignName,
+      data.description,
+      data.imageUrl,
+      data.target
+    );
+    try {
+      const accounts = await web3.eth.getAccounts();
+      await factory.methods
+        .createCampaign(
+          data.minimumContribution,
+          data.campaignName,
+          data.description,
+          data.imageUrl,
+          data.target
+        )
+        .send({
+          from: accounts[0],
+        });
+
+      router.push("/");
+    } catch (err) {
+      setError(err.message);
+      console.log(err);
+    }
+  }
+
   return (
     <div>
       <Head>
@@ -41,38 +84,61 @@ export default function New() {
             boxShadow={"lg"}
             p={8}
           >
-            <Stack spacing={4}>
-              <FormControl id="min-contri">
-                <FormLabel>Minimum Contribution</FormLabel>
-                <InputGroup>
-                  {" "}
-                  <Input type="number" /> <InputRightAddon children="WEI" />
-                </InputGroup>
-              </FormControl>
-              <FormControl id="campaign-name">
-                <FormLabel>Campaign Name</FormLabel>
-                <Input />
-              </FormControl>
-              <FormControl id="campaign-description">
-                <FormLabel>Campaign Description</FormLabel>
-                <Input />
-              </FormControl>
-              <FormControl id="image-url">
-                <FormLabel>Image URL</FormLabel>
-                <Input />
-              </FormControl>
-              <Stack spacing={10}>
-                <Button
-                  bg={"teal.400"}
-                  color={"white"}
-                  _hover={{
-                    bg: "teal.500",
-                  }}
-                >
-                  Create
-                </Button>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <Stack spacing={4}>
+                <FormControl id="minimumContribution">
+                  <FormLabel>Minimum Contribution</FormLabel>
+                  <InputGroup>
+                    {" "}
+                    <Input
+                      type="number"
+                      {...register("minimumContribution")}
+                    />{" "}
+                    <InputRightAddon children="WEI" />
+                  </InputGroup>
+                </FormControl>
+                <FormControl id="campaignName">
+                  <FormLabel>Campaign Name</FormLabel>
+                  <Input {...register("campaignName")} />
+                </FormControl>
+                <FormControl id="description">
+                  <FormLabel>Campaign Description</FormLabel>
+                  <Input {...register("description")} />
+                </FormControl>
+                <FormControl id="imageUrl">
+                  <FormLabel>Image URL</FormLabel>
+                  <Input {...register("imageUrl")} />
+                </FormControl>
+                <FormControl id="target">
+                  <FormLabel>Target</FormLabel>
+                  <InputGroup>
+                    <Input type="number" {...register("target")} />
+                    <InputRightAddon children="WEI" />
+                  </InputGroup>
+                </FormControl>
+
+                {error ? (
+                  <Alert status="error">
+                    <AlertIcon />
+                    <AlertDescription mr={2}> {error}</AlertDescription>
+                  </Alert>
+                ) : null}
+
+                <Stack spacing={10}>
+                  <Button
+                    bg={"teal.400"}
+                    color={"white"}
+                    _hover={{
+                      bg: "teal.500",
+                    }}
+                    isLoading={formState.isSubmitting}
+                    type="submit"
+                  >
+                    Create
+                  </Button>
+                </Stack>
               </Stack>
-            </Stack>
+            </form>
           </Box>
         </Stack>
       </main>

@@ -5,11 +5,7 @@ const compiledFactory = require('./build/CampaignFactory.json');
 
 require('dotenv').config();
 
-// const OPTIONS = {
-//     defaultBlock: 'latest',
-//     transactionConfirmationBlocks: 1,
-//     transactionBlockTimeout: 8
-// }
+
 const provider = new HDWalletProvider(
     process.env.mnemonic,
     process.env.link

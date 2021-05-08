@@ -10,11 +10,14 @@ import {
   Container,
   Heading,
 } from "@chakra-ui/react";
+import { useWallet } from "use-wallet";
 
 import NextLink from "next/link";
 import DarkModeSwitch from "./DarkModeSwitch";
 
 export default function NavBar() {
+  const wallet = useWallet();
+
   return (
     <Box>
       <Flex
@@ -85,21 +88,34 @@ export default function NavBar() {
               href={"#"}
               display={{ base: "none", md: "inline-flex" }}
             >
-              Connect Wallet
-            </Button>
-            <Button
-              display={{ base: "none", md: "inline-flex" }}
-              fontSize={"md"}
-              fontWeight={600}
-              color={"white"}
-              bg={"teal.400"}
-              href={"#"}
-              _hover={{
-                bg: "teal.300",
-              }}
-            >
               <NextLink href="/campaign/new">Create Campaign</NextLink>
             </Button>
+
+            {wallet.status === "connected" ? (
+              <div>
+                <div>Account: {wallet.account}</div>
+                <div>Balance: {wallet.balance}</div>
+                <button onClick={() => wallet.reset()}>disconnect</button>
+              </div>
+            ) : (
+              <div>
+                <Button
+                  display={{ base: "none", md: "inline-flex" }}
+                  fontSize={"md"}
+                  fontWeight={600}
+                  color={"white"}
+                  bg={"teal.400"}
+                  href={"#"}
+                  _hover={{
+                    bg: "teal.300",
+                  }}
+                  onClick={() => wallet.connect()}
+                >
+                  Connect Wallet{" "}
+                </Button>
+              </div>
+            )}
+
             <DarkModeSwitch />
           </Stack>
         </Container>

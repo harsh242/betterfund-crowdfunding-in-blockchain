@@ -1,5 +1,6 @@
 import "../styles/globals.css";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
+import { UseWalletProvider } from "use-wallet";
 import NavBar from "../components/Navbar";
 import Footer from "../components/Footer";
 
@@ -17,9 +18,19 @@ function MyApp({ Component, pageProps }) {
     <>
       {" "}
       <ChakraProvider theme={theme}>
-        <NavBar />
-        <Component {...pageProps} />
-        <Footer />
+        <UseWalletProvider
+          chainId={4}
+          connectors={{
+            walletconnect: {
+              rpcUrl:
+                "https://rinkeby.infura.io/v3/08ac79d88b5d4aea961ca36af7ea6ee7",
+            },
+          }}
+        >
+          <NavBar />
+          <Component {...pageProps} />
+          <Footer />{" "}
+        </UseWalletProvider>
       </ChakraProvider>
     </>
   );
