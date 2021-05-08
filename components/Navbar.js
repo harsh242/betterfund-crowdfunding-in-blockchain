@@ -9,11 +9,16 @@ import {
   useBreakpointValue,
   Container,
   Heading,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
 } from "@chakra-ui/react";
 import { useWallet } from "use-wallet";
 
 import NextLink from "next/link";
 import DarkModeSwitch from "./DarkModeSwitch";
+import { ChevronDownIcon } from "@chakra-ui/icons";
 
 export default function NavBar() {
   const wallet = useWallet();
@@ -92,11 +97,17 @@ export default function NavBar() {
             </Button>
 
             {wallet.status === "connected" ? (
-              <div>
-                <div>Account: {wallet.account}</div>
-                <div>Balance: {wallet.balance}</div>
-                <button onClick={() => wallet.reset()}>disconnect</button>
-              </div>
+              <Menu>
+                <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
+                  {wallet.account.substr(0, 10) + "..."}
+                </MenuButton>
+                <MenuList>
+                  <MenuItem onClick={() => wallet.reset()}>
+                    {" "}
+                    Disconnect Wallet{" "}
+                  </MenuItem>
+                </MenuList>
+              </Menu>
             ) : (
               <div>
                 <Button

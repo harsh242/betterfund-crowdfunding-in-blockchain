@@ -138,16 +138,24 @@ export default function NewCampaign() {
                       Create
                     </Button>
                   ) : (
-                    <Button
-                      color={"white"}
-                      bg={"teal.400"}
-                      _hover={{
-                        bg: "teal.300",
-                      }}
-                      onClick={() => wallet.connect()}
-                    >
-                      Connect Wallet{" "}
-                    </Button>
+                    <Stack spacing={3}>
+                      <Button
+                        color={"white"}
+                        bg={"teal.400"}
+                        _hover={{
+                          bg: "teal.300",
+                        }}
+                        onClick={() => wallet.connect()}
+                      >
+                        Connect Wallet{" "}
+                      </Button>
+                      <Alert status="warning">
+                        <AlertIcon />
+                        <AlertDescription mr={2}>
+                          Please Connect Your Wallet to Create a Campaign
+                        </AlertDescription>
+                      </Alert>
+                    </Stack>
                   )}
                 </Stack>
               </Stack>
