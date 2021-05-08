@@ -31,12 +31,18 @@ const data = {
   id: "0x5d7676dB6119Ed1F6C696419058310D16a734dA9",
 };
 
-function CampaignCard() {
+function CampaignCard({ name, description, id, imageURL }) {
   return (
-    <Flex w="max" alignItems="center" justifyContent="center" cursor="pointer"   transition={"transform 0.3s ease"}
+    <Flex
+      w="max"
+      alignItems="center"
+      justifyContent="center"
+      cursor="pointer"
+      transition={"transform 0.3s ease"}
       _hover={{
         transform: "translateY(-8px)",
-      }}>
+      }}
+    >
       <NextLink href="/campaign/1">
         <Box
           bg={useColorModeValue("white", "gray.800")}
