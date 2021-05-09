@@ -1,6 +1,8 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
+import { useWallet } from "use-wallet";
+import { useForm } from "react-hook-form";
 import {
   Box,
   Flex,
@@ -20,6 +22,9 @@ import {
   StatNumber,
   useColorModeValue,
   Tooltip,
+  Alert,
+  AlertIcon,
+  AlertDescription,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 
@@ -75,19 +80,30 @@ function StatsCard(props) {
   );
 }
 
-export default function CampaignSingle({
-  address,
-  minimumContribution,
-  balance,
-  requestsCount,
-  approversCount,
-  manager,
-  name,
-  description,
-}) {
+export default function CampaignSingle() {
   const router = useRouter();
   const { id } = router.query;
   const [campaignData, setCampaignData] = useState([]);
+  const { handleSubmit, errors, register, formState } = useForm();
+  const [error, setError] = useState("");
+  const wallet = useWallet();
+
+  async function onSubmit(data) {
+    console.log(data);
+    try {
+      const campaign = Campaign(id);
+      const accounts = await web3.eth.getAccounts();
+      await campaign.methods.contibute().send({
+        from: accounts[0],
+        value: web3.utils.toWei(data.value, "ether"),
+      });
+
+      router.push("/");
+    } catch (err) {
+      setError(err.message);
+      console.log(err);
+    }
+  }
 
   async function getSummary() {
     try {
@@ -212,32 +228,55 @@ export default function CampaignSingle({
                     Contribute Now!
                   </Heading>
                 </Stack>
-                <Box as={"form"} mt={10}>
+                <Box mt={10}>
                   <Stack spacing={4}>
-                    <FormControl id="min-contri">
-                      <FormLabel>
-                        Amount in Ether you want to contribute
-                      </FormLabel>
-                      <InputGroup>
-                        {" "}
-                        <Input type="number" />{" "}
-                        <InputRightAddon children="ETH" />
-                      </InputGroup>
-                    </FormControl>
+                    <form onSubmit={handleSubmit(onSubmit)}>
+                      <FormControl id="value">
+                        <FormLabel>
+                          Amount in Ether you want to contribute
+                        </FormLabel>
+                        <InputGroup>
+                          {" "}
+                          <Input {...register("value")} />{" "}
+                          <InputRightAddon children="ETH" />
+                        </InputGroup>
+                      </FormControl>
+
+                      {error ? (
+                        <Alert status="error">
+                          <AlertIcon />
+                          <AlertDescription mr={2}> {error}</AlertDescription>
+                        </Alert>
+                      ) : null}
+
+                      <Stack spacing={10}>
+                        {wallet.status === "connected" ? (
+                          <Button
+                            fontFamily={"heading"}
+                            mt={4}
+                            w={"full"}
+                            bgGradient="linear(to-r, teal.400,green.400)"
+                            color={"white"}
+                            _hover={{
+                              bgGradient: "linear(to-r, teal.400,blue.400)",
+                              boxShadow: "xl",
+                            }}
+                            isLoading={formState.isSubmitting}
+                            type="submit"
+                          >
+                            Contribute
+                          </Button>
+                        ) : (
+                          <Alert status="warning" mt={4}>
+                            <AlertIcon />
+                            <AlertDescription mr={2}>
+                              Please Connect Your Wallet to Contribute
+                            </AlertDescription>
+                          </Alert>
+                        )}
+                      </Stack>
+                    </form>
                   </Stack>
-                  <Button
-                    fontFamily={"heading"}
-                    mt={4}
-                    w={"full"}
-                    bgGradient="linear(to-r, teal.400,green.400)"
-                    color={"white"}
-                    _hover={{
-                      bgGradient: "linear(to-r, teal.400,blue.400)",
-                      boxShadow: "xl",
-                    }}
-                  >
-                    Contribute
-                  </Button>
                 </Box>
               </Stack>
 
@@ -259,7 +298,7 @@ export default function CampaignSingle({
                       boxShadow: "xl",
                     }}
                   >
-                    <NextLink href={`/campaigns/${address}/requests`}>
+                    <NextLink href={`/campaigns/requests`}>
                       View Withdrawal Requests
                     </NextLink>
                   </Button>
