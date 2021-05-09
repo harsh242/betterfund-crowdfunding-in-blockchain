@@ -298,7 +298,7 @@ export default function CampaignSingle() {
                       boxShadow: "xl",
                     }}
                   >
-                    <NextLink href={`/campaigns/requests`}>
+                    <NextLink href={`/campaign/requests`}>
                       View Withdrawal Requests
                     </NextLink>
                   </Button>
