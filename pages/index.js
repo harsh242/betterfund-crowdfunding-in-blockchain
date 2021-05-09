@@ -35,7 +35,7 @@ const data = {
   id: "0x5d7676dB6119Ed1F6C696419058310D16a734dA9",
 };
 
-function CampaignCard({ name, description, id, imageURL }) {
+function CampaignCard({ name, description, creatorId, imageURL, id }) {
   return (
     <NextLink href={`/campaign/${id}`}>
       <Box
@@ -101,7 +101,7 @@ function CampaignCard({ name, description, id, imageURL }) {
               by
             </Text>{" "}
             <Heading size="base" isTruncated>
-              {id}
+              {creatorId}
             </Heading>
           </Flex>
         </Box>
@@ -110,24 +110,29 @@ function CampaignCard({ name, description, id, imageURL }) {
   );
 }
 
-export default function Home() {
+export async function getStaticProps(context) {
+  const campaigns = await factory.methods.getDeployedCampaigns().call();
+
+  console.log(campaigns);
+
+  return {
+    props: { campaigns },
+  };
+}
+
+export default function Home({ campaigns }) {
   const [campaignList, setCampaignList] = useState([]);
 
   async function getSummary() {
     try {
-      const campaigns = await factory.methods.getDeployedCampaigns().call();
-
-      console.log(campaigns);
-
       const summary = await Promise.all(
         campaigns.map((campaign, i) =>
           Campaign(campaigns[i]).methods.getSummary().call()
         )
       );
-
       console.log("summary ", summary);
-
       setCampaignList(summary);
+
       return summary;
     } catch (e) {
       console.log(e);
@@ -182,14 +187,15 @@ export default function Home() {
 
           {campaignList.length > 0 ? (
             <SimpleGrid columns={{ base: 1, md: 3 }} spacing={10} py={8}>
-              {campaignList.map((el) => {
+              {campaignList.map((el, i) => {
                 return (
-                  <div key={el[4]}>
+                  <div key={i}>
                     <CampaignCard
                       name={el[5]}
                       description={el[6]}
-                      id={el[4]}
+                      creatorId={el[4]}
                       imageURL={el[7]}
+                      id={campaigns[i]}
                     />
                   </div>
                 );

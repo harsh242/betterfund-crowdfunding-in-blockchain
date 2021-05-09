@@ -1,5 +1,6 @@
 import Head from "next/head";
-
+import { useRouter } from "next/router";
+import { useState, useEffect } from "react";
 import {
   Box,
   Flex,
@@ -21,6 +22,9 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
+
+import web3 from "../../smart-contract/web3";
+import Campaign from "../../smart-contract/campaign";
 
 function StatsCard(props) {
   const { title, stat, info } = props;
@@ -71,7 +75,37 @@ function StatsCard(props) {
   );
 }
 
-export default function CampaignSingle() {
+export default function CampaignSingle({
+  address,
+  minimumContribution,
+  balance,
+  requestsCount,
+  approversCount,
+  manager,
+  name,
+  description,
+}) {
+  const router = useRouter();
+  const { id } = router.query;
+  const [campaignData, setCampaignData] = useState([]);
+
+  async function getSummary() {
+    try {
+      const campaign = Campaign(id);
+      const summary = await campaign.methods.getSummary().call();
+
+      console.log("summary ", summary);
+
+      setCampaignData(summary);
+      return summary;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  useEffect(() => {
+    getSummary();
+  }, []);
   return (
     <div>
       <Head>
@@ -94,41 +128,40 @@ export default function CampaignSingle() {
                 lineHeight={1.1}
                 fontSize={{ base: "3xl", sm: "4xl", md: "5xl" }}
               >
-                Crypto Covid Fund
+                {campaignData[5]}
               </Heading>
               <Text
                 color={useColorModeValue("gray.500", "gray.200")}
                 fontSize={{ base: "lg" }}
               >
-                A campaign by Indian Crypto Community to raise money for Covid
-                Issues in India.
+                {campaignData[6]}
               </Text>
               <Box mx={"auto"} w={"full"}>
                 <SimpleGrid columns={{ base: 1 }} spacing={{ base: 5 }}>
                   <StatsCard
-                    title={"Minimum Contribution in Wei ( 1 ETH = 10 ^ 18 Wei)"}
-                    stat={"100"}
+                    title={"Minimum Contribution in Wei"}
+                    stat={campaignData[0]}
                     info={
                       "You must contribute at least this much in Wei ( 1 ETH = 10 ^ 18 Wei) to become an approver"
                     }
                   />
                   <StatsCard
                     title={"Wallet Address of Campaign Creator"}
-                    stat={"0x5d7676dB6119Ed1F6C696419058310D16a734dA9"}
+                    stat={campaignData[4]}
                     info={
                       "The Campaign Creator created the campaign and can create requests to withdraw money."
                     }
                   />
                   <StatsCard
                     title={"Number of Requests"}
-                    stat={"2"}
+                    stat={campaignData[2]}
                     info={
                       "A request tries to withdraw money from the contract. Requests must be approved by approvers"
                     }
                   />
                   <StatsCard
                     title={"Number of Approvers"}
-                    stat={"10"}
+                    stat={campaignData[3]}
                     info={
                       "Number of people who have already donated to this campaign"
                     }
@@ -153,7 +186,9 @@ export default function CampaignSingle() {
                   isTruncated
                   maxW={{ base: "	10rem", sm: "sm" }}
                 >
-                  200
+                  {campaignData[1] > 0
+                    ? web3.utils.fromWei(campaignData[1], "ether")
+                    : "0, Become our First Donor 😄"}
                 </StatNumber>
                 <Text fontSize={"sm"} mt={"2"}>
                   * The balance is how much money this campaign has left to
@@ -224,7 +259,7 @@ export default function CampaignSingle() {
                       boxShadow: "xl",
                     }}
                   >
-                    <NextLink href="/campaign/requests/requests">
+                    <NextLink href={`/campaigns/${address}/requests`}>
                       View Withdrawal Requests
                     </NextLink>
                   </Button>
