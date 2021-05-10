@@ -30,6 +30,34 @@ import NextLink from "next/link";
 
 import web3 from "../../smart-contract/web3";
 import Campaign from "../../smart-contract/campaign";
+import factory from "../../smart-contract/factory";
+
+// export async function getStaticPaths() {
+//   const campaigns = await factory.methods.getDeployedCampaigns().call();
+
+//   console.log(campaigns);
+//   const paths = campaigns.map((campaign, i) => ({
+//     params: { id: campaigns[i] },
+//   }));
+//   console.log("paths", paths);
+
+//   return { paths, fallback: false };
+// }
+
+// export async function getStaticProps({ params }) {
+//   const campaignId = params.id;
+
+//   return { props: { campaignId } };
+// }
+
+export async function getServerSideProps(context) {
+  const campaignId = context.params.id;
+
+  return { props: { campaignId } };
+  return {
+    props: {}, // will be passed to the page component as props
+  };
+}
 
 function StatsCard(props) {
   const { title, stat, info } = props;
@@ -80,9 +108,9 @@ function StatsCard(props) {
   );
 }
 
-export default function CampaignSingle() {
-  const router = useRouter();
-  const { id } = router.query;
+export default function CampaignSingle({ campaignId }) {
+  // const router = useRouter();
+  // const { id } = router.query;
   const [campaignData, setCampaignData] = useState([]);
   const { handleSubmit, errors, register, formState } = useForm();
   const [error, setError] = useState("");
@@ -91,7 +119,7 @@ export default function CampaignSingle() {
   async function onSubmit(data) {
     console.log(data);
     try {
-      const campaign = Campaign(id);
+      const campaign = Campaign(campaignId);
       const accounts = await web3.eth.getAccounts();
       await campaign.methods.contibute().send({
         from: accounts[0],
@@ -107,7 +135,7 @@ export default function CampaignSingle() {
 
   async function getSummary() {
     try {
-      const campaign = Campaign(id);
+      const campaign = Campaign(campaignId);
       const summary = await campaign.methods.getSummary().call();
 
       console.log("summary ", summary);
@@ -121,6 +149,7 @@ export default function CampaignSingle() {
 
   useEffect(() => {
     getSummary();
+    console.log(campaignId);
   }, []);
   return (
     <div>
@@ -298,7 +327,7 @@ export default function CampaignSingle() {
                       boxShadow: "xl",
                     }}
                   >
-                    <NextLink href={`/campaign/requests`}>
+                    <NextLink href={`/campaign/${campaignId}/reques`}>
                       View Withdrawal Requests
                     </NextLink>
                   </Button>
