@@ -32,32 +32,44 @@ import web3 from "../../smart-contract/web3";
 import Campaign from "../../smart-contract/campaign";
 import factory from "../../smart-contract/factory";
 
-// export async function getStaticPaths() {
-//   const campaigns = await factory.methods.getDeployedCampaigns().call();
+export async function getStaticPaths() {
+  const campaigns = await factory.methods.getDeployedCampaigns().call();
 
-//   console.log(campaigns);
-//   const paths = campaigns.map((campaign, i) => ({
-//     params: { id: campaigns[i] },
-//   }));
-//   console.log("paths", paths);
+  console.log(campaigns);
+  const paths = campaigns.map((campaign, i) => ({
+    params: { id: campaigns[i] },
+  }));
+  console.log("paths", paths);
 
-//   return { paths, fallback: false };
-// }
+  return { paths, fallback: false };
+}
 
-// export async function getStaticProps({ params }) {
-//   const campaignId = params.id;
+export async function getStaticProps({ params }) {
+  const campaignId = params.id;
+  const campaign = Campaign(campaignId);
+  const summary = await campaign.methods.getSummary().call();
+
+  return {
+    props: {
+      campaignId,
+      minimumContribution: summary[0],
+      balance: summary[1],
+      requestsCount: summary[2],
+      approversCount: summary[3],
+      manager: summary[4],
+      name: summary[5],
+      description: summary[6],
+      image: summary[7],
+      target: summary[8],
+    },
+  };
+}
+
+// export async function getServerSideProps(context) {
+//   const campaignId = context.params.id;
 
 //   return { props: { campaignId } };
 // }
-
-export async function getServerSideProps(context) {
-  const campaignId = context.params.id;
-
-  return { props: { campaignId } };
-  return {
-    props: {}, // will be passed to the page component as props
-  };
-}
 
 function StatsCard(props) {
   const { title, stat, info } = props;
@@ -108,10 +120,18 @@ function StatsCard(props) {
   );
 }
 
-export default function CampaignSingle({ campaignId }) {
-  // const router = useRouter();
-  // const { id } = router.query;
-  const [campaignData, setCampaignData] = useState([]);
+export default function CampaignSingle({
+  campaignId,
+  minimumContribution,
+  balance,
+  requestsCount,
+  approversCount,
+  manager,
+  name,
+  description,
+  image,
+  target,
+}) {
   const { handleSubmit, errors, register, formState } = useForm();
   const [error, setError] = useState("");
   const wallet = useWallet();
@@ -133,24 +153,6 @@ export default function CampaignSingle({ campaignId }) {
     }
   }
 
-  async function getSummary() {
-    try {
-      const campaign = Campaign(campaignId);
-      const summary = await campaign.methods.getSummary().call();
-
-      console.log("summary ", summary);
-
-      setCampaignData(summary);
-      return summary;
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
-  useEffect(() => {
-    getSummary();
-    console.log(campaignId);
-  }, []);
   return (
     <div>
       <Head>
@@ -173,40 +175,40 @@ export default function CampaignSingle({ campaignId }) {
                 lineHeight={1.1}
                 fontSize={{ base: "3xl", sm: "4xl", md: "5xl" }}
               >
-                {campaignData[5]}
+                {name}
               </Heading>
               <Text
                 color={useColorModeValue("gray.500", "gray.200")}
                 fontSize={{ base: "lg" }}
               >
-                {campaignData[6]}
+                {description}
               </Text>
               <Box mx={"auto"} w={"full"}>
                 <SimpleGrid columns={{ base: 1 }} spacing={{ base: 5 }}>
                   <StatsCard
                     title={"Minimum Contribution in Wei"}
-                    stat={campaignData[0]}
+                    stat={minimumContribution}
                     info={
                       "You must contribute at least this much in Wei ( 1 ETH = 10 ^ 18 Wei) to become an approver"
                     }
                   />
                   <StatsCard
                     title={"Wallet Address of Campaign Creator"}
-                    stat={campaignData[4]}
+                    stat={manager}
                     info={
                       "The Campaign Creator created the campaign and can create requests to withdraw money."
                     }
                   />
                   <StatsCard
                     title={"Number of Requests"}
-                    stat={campaignData[2]}
+                    stat={requestsCount}
                     info={
                       "A request tries to withdraw money from the contract. Requests must be approved by approvers"
                     }
                   />
                   <StatsCard
                     title={"Number of Approvers"}
-                    stat={campaignData[3]}
+                    stat={approversCount}
                     info={
                       "Number of people who have already donated to this campaign"
                     }
@@ -231,8 +233,8 @@ export default function CampaignSingle({ campaignId }) {
                   isTruncated
                   maxW={{ base: "	10rem", sm: "sm" }}
                 >
-                  {campaignData[1] > 0
-                    ? web3.utils.fromWei(campaignData[1], "ether")
+                  {balance > 0
+                    ? web3.utils.fromWei(balance, "ether")
                     : "0, Become our First Donor 😄"}
                 </StatNumber>
                 <Text fontSize={"sm"} mt={"2"}>
@@ -327,7 +329,7 @@ export default function CampaignSingle({ campaignId }) {
                       boxShadow: "xl",
                     }}
                   >
-                    <NextLink href={`/campaign/${campaignId}/reques`}>
+                    <NextLink href={`/campaign/${campaignId}/requests`}>
                       View Withdrawal Requests
                     </NextLink>
                   </Button>
