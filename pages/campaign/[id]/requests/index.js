@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import NextLink from "next/link";
 
@@ -27,19 +27,110 @@ import {
   Th,
   Td,
   TableCaption,
-  Stat,
-  StatLabel,
-  StatNumber,
-  StatHelpText,
-  StatArrow,
-  StatGroup,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
+import web3 from "../../../../smart-contract/web3";
+import Campaign from "../../../../smart-contract/campaign";
+import factory from "../../../../smart-contract/factory";
 
-export default function Requests() {
-  const str = "0x5d7676dB6119Ed1F6C696419058310D16a734dA9";
-  const router = useRouter();
-  const { id } = router.query;
+export async function getStaticPaths() {
+  const campaigns = await factory.methods.getDeployedCampaigns().call();
+
+  console.log(campaigns);
+  const paths = campaigns.map((campaign, i) => ({
+    params: { id: campaigns[i] },
+  }));
+  console.log("paths", paths);
+
+  return { paths, fallback: false };
+}
+
+export async function getStaticProps({ params }) {
+  const campaignId = params.id;
+  const campaign = Campaign(campaignId);
+  const requestCount = await campaign.methods.getRequestsCount().call();
+  const approversCount = await campaign.methods.approversCount().call();
+
+  return {
+    props: {
+      campaignId,
+      requestCount,
+      approversCount,
+    },
+  };
+}
+
+const RequestRow = ({ id, request, approversCount }) => {
+  return (
+    <Tr>
+      <Td>{id}</Td>
+      <Td>{request.description}</Td>
+      <Td isNumeric>{web3.utils.fromWei(request.value, "ether")}</Td>
+      <Td>{request.recipient.substr(0, 10) + "..."}</Td>
+      <Td>
+        {request.approvalCount}/{approversCount}
+      </Td>
+      <Td>
+        {" "}
+        <Button
+          colorScheme="yellow"
+          variant="outline"
+          _hover={{
+            bg: "yellow.600",
+            color: "white",
+          }}
+        >
+          <NextLink href="/campaign/requests/new">Approve</NextLink>
+        </Button>
+      </Td>
+      <Td>
+        {" "}
+        <Button
+          colorScheme="green"
+          variant="outline"
+          _hover={{
+            bg: "green.600",
+            color: "white",
+          }}
+        >
+          <NextLink href="/campaign/requests/new">Finalize</NextLink>
+        </Button>
+      </Td>
+    </Tr>
+  );
+};
+
+export default function Requests({
+  campaignId,
+  campaign,
+  requestCount,
+  approversCount,
+}) {
+  const [requestsList, setRequestsList] = useState([]);
+
+  async function getRequests() {
+    try {
+      const campaign = Campaign(campaignId);
+      const requests = await Promise.all(
+        Array(parseInt(requestCount))
+          .fill()
+          .map((element, index) => {
+            return campaign.methods.requests(index).call();
+          })
+      );
+
+      console.log("requests", requests);
+      setRequestsList(requests);
+
+      return requests;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  useEffect(() => {
+    getRequests();
+  }, []);
   return (
     <div>
       <Head>
@@ -77,7 +168,7 @@ export default function Requests() {
                   bg: "teal.300",
                 }}
               >
-                <NextLink href={`/campaign/${id}/requests/new`}>
+                <NextLink href={`/campaign/${campaignId}/requests/new`}>
                   Add Withdrawal Request
                 </NextLink>
               </Button>
@@ -88,7 +179,9 @@ export default function Requests() {
           <Divider />
           <Box overflowX="auto">
             <Table variant="striped">
-              <TableCaption textAlign="left">Found 3 Requests</TableCaption>
+              <TableCaption textAlign="left">
+                Found {requestCount} Requests
+              </TableCaption>
               <Thead>
                 <Tr>
                   <Th>ID</Th>
@@ -103,41 +196,16 @@ export default function Requests() {
                 </Tr>
               </Thead>
               <Tbody>
-                <Tr>
-                  <Td>0</Td>
-                  <Td>For Oxygen Supply in Delhi</Td>
-                  <Td isNumeric>25.4 ETH</Td>
-                  <Td>{str.substr(0, 10) + "..."}</Td>
-                  <Td>0/2</Td>
-                  <Td>
-                    {" "}
-                    <Button
-                      colorScheme="yellow"
-                      variant="outline"
-                      _hover={{
-                        bg: "yellow.600",
-                        color: "white",
-                      }}
-                    >
-                      <NextLink href="/campaign/requests/new">Approve</NextLink>
-                    </Button>
-                  </Td>
-                  <Td>
-                    {" "}
-                    <Button
-                      colorScheme="green"
-                      variant="outline"
-                      _hover={{
-                        bg: "green.600",
-                        color: "white",
-                      }}
-                    >
-                      <NextLink href="/campaign/requests/new">
-                        Finalize
-                      </NextLink>
-                    </Button>
-                  </Td>
-                </Tr>
+                {requestsList.map((request, index) => {
+                  return (
+                    <RequestRow
+                      key={index}
+                      id={index}
+                      request={request}
+                      approversCount={approversCount}
+                    />
+                  );
+                })}
               </Tbody>
             </Table>
           </Box>
