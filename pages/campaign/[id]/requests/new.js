@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import Head from "next/head";
 import {
   Flex,
@@ -7,6 +6,7 @@ import {
   FormLabel,
   Input,
   Stack,
+  Link,
   Button,
   Heading,
   Text,
@@ -19,64 +19,51 @@ import {
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { ArrowBackIcon } from "@chakra-ui/icons";
-import { useForm } from "react-hook-form";
-
-import factory from "../../smart-contract/factory";
-import web3 from "../../smart-contract/web3";
-
-import { useRouter } from "next/router";
 import { useWallet } from "use-wallet";
+import { useForm } from "react-hook-form";
+import { useRouter } from "next/router";
+import { useState, useEffect } from "react";
 
-export default function NewCampaign() {
-  const { handleSubmit, errors, register, formState } = useForm();
+import web3 from "../../../../smart-contract/web3";
+import Campaign from "../../../../smart-contract/campaign";
+
+export default function NewRequest() {
   const router = useRouter();
+  const { id } = router.query;
+  const { handleSubmit, errors, register, formState } = useForm();
   const [error, setError] = useState("");
   const wallet = useWallet();
 
   async function onSubmit(data) {
-    console.log(
-      data.minimumContribution,
-      data.campaignName,
-      data.description,
-      data.imageUrl,
-      data.target
-    );
+    console.log(data);
+    const campaign = Campaign(id);
     try {
       const accounts = await web3.eth.getAccounts();
-      await factory.methods
-        .createCampaign(
-          data.minimumContribution,
-          data.campaignName,
-          data.description,
-          data.imageUrl,
-          data.target
-        )
-        .send({
-          from: accounts[0],
-        });
+      await campaign.methods
+        .createRequest(data.description, web3.utils.toWei(data.value, "ether"), data.recipient)
+        .send({ from: accounts[0] });
 
-      router.push("/");
+      router.push(`/campaign/${id}/requests`);
     } catch (err) {
       setError(err.message);
       console.log(err);
     }
   }
-
   return (
     <div>
       <Head>
-        <title>New Campaign</title>
-        <meta name="description" content="Create New Campaign" />
+        <title>Create a Withdrawal Request</title>
+        <meta name="description" content="Create a Withdrawal Request" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
         <Stack spacing={8} mx={"auto"} maxW={"2xl"} py={12} px={6}>
           <Text fontSize={"lg"} color={"teal.400"}>
             <ArrowBackIcon />
-            <NextLink href="/"> Back to Home</NextLink>
+            <NextLink href="/"> Back to Requests</NextLink>
           </Text>
           <Stack>
-            <Heading fontSize={"4xl"}>Create a New Campaign 📢</Heading>
+            <Heading fontSize={"4xl"}>Create a Withdrawal Request 💸</Heading>
           </Stack>
           <Box
             rounded={"lg"}
@@ -86,44 +73,29 @@ export default function NewCampaign() {
           >
             <form onSubmit={handleSubmit(onSubmit)}>
               <Stack spacing={4}>
-                <FormControl id="minimumContribution">
-                  <FormLabel>Minimum Contribution</FormLabel>
-                  <InputGroup>
-                    {" "}
-                    <Input
-                      type="number"
-                      {...register("minimumContribution")}
-                    />{" "}
-                    <InputRightAddon children="WEI" />
-                  </InputGroup>
-                </FormControl>
-                <FormControl id="campaignName">
-                  <FormLabel>Campaign Name</FormLabel>
-                  <Input {...register("campaignName")} />
-                </FormControl>
                 <FormControl id="description">
-                  <FormLabel>Campaign Description</FormLabel>
+                  <FormLabel>Request Description</FormLabel>
                   <Input {...register("description")} />
                 </FormControl>
-                <FormControl id="imageUrl">
-                  <FormLabel>Image URL</FormLabel>
-                  <Input {...register("imageUrl")} />
-                </FormControl>
-                <FormControl id="target">
-                  <FormLabel>Target</FormLabel>
+                <FormControl id="value">
+                  <FormLabel>Amount in Ether</FormLabel>
                   <InputGroup>
-                    <Input type="number" {...register("target")} />
-                    <InputRightAddon children="WEI" />
+                    {" "}
+                    <Input type="number" {...register("value")} />{" "}
+                    <InputRightAddon children="ETH" />
                   </InputGroup>
                 </FormControl>
 
+                <FormControl id="recipient">
+                  <FormLabel>Recipient Ethereum Wallet Address</FormLabel>
+                  <Input {...register("recipient")} />
+                </FormControl>
                 {error ? (
                   <Alert status="error">
                     <AlertIcon />
                     <AlertDescription mr={2}> {error}</AlertDescription>
                   </Alert>
                 ) : null}
-
                 <Stack spacing={10}>
                   {wallet.status === "connected" ? (
                     <Button
@@ -135,7 +107,7 @@ export default function NewCampaign() {
                       isLoading={formState.isSubmitting}
                       type="submit"
                     >
-                      Create
+                      Create Withdrawal Request
                     </Button>
                   ) : (
                     <Stack spacing={3}>

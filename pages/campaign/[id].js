@@ -51,7 +51,7 @@ export async function getStaticProps({ params }) {
 
   return {
     props: {
-      campaignId,
+      id: campaignId,
       minimumContribution: summary[0],
       balance: summary[1],
       requestsCount: summary[2],
@@ -64,12 +64,6 @@ export async function getStaticProps({ params }) {
     },
   };
 }
-
-// export async function getServerSideProps(context) {
-//   const campaignId = context.params.id;
-
-//   return { props: { campaignId } };
-// }
 
 function StatsCard(props) {
   const { title, stat, info } = props;
@@ -121,7 +115,7 @@ function StatsCard(props) {
 }
 
 export default function CampaignSingle({
-  campaignId,
+  id,
   minimumContribution,
   balance,
   requestsCount,
@@ -139,14 +133,12 @@ export default function CampaignSingle({
   async function onSubmit(data) {
     console.log(data);
     try {
-      const campaign = Campaign(campaignId);
+      const campaign = Campaign(id);
       const accounts = await web3.eth.getAccounts();
       await campaign.methods.contibute().send({
         from: accounts[0],
         value: web3.utils.toWei(data.value, "ether"),
       });
-
-      router.push("/");
     } catch (err) {
       setError(err.message);
       console.log(err);
@@ -329,7 +321,7 @@ export default function CampaignSingle({
                       boxShadow: "xl",
                     }}
                   >
-                    <NextLink href={`/campaign/${campaignId}/requests`}>
+                    <NextLink href={`/campaign/${id}/requests`}>
                       View Withdrawal Requests
                     </NextLink>
                   </Button>

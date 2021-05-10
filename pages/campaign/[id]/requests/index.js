@@ -34,9 +34,12 @@ import {
   StatArrow,
   StatGroup,
 } from "@chakra-ui/react";
+import { useRouter } from "next/router";
 
 export default function Requests() {
   const str = "0x5d7676dB6119Ed1F6C696419058310D16a734dA9";
+  const router = useRouter();
+  const { id } = router.query;
   return (
     <div>
       <Head>
@@ -74,7 +77,7 @@ export default function Requests() {
                   bg: "teal.300",
                 }}
               >
-                <NextLink href="/campaign/requests/new">
+                <NextLink href={`/campaign/${id}/requests/new`}>
                   Add Withdrawal Request
                 </NextLink>
               </Button>
