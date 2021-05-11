@@ -1,6 +1,5 @@
 import Head from "next/head";
 import { useEffect, useState } from "react";
-import NextImage from "next/image";
 import NextLink from "next/link";
 import styles from "../styles/Home.module.css";
 import { motion } from "framer-motion";
@@ -20,20 +19,15 @@ import {
   Icon,
   chakra,
   Tooltip,
+  Spinner,
+  SkeletonCircle,
+  HStack,
 } from "@chakra-ui/react";
 
 import factory from "../smart-contract/factory";
 import Campaign from "../smart-contract/campaign";
 
 import { FaDonate } from "react-icons/fa";
-const data = {
-  imageURL:
-    "https://images.unsplash.com/photo-1572635196237-14b3f281503f?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=4600&q=80",
-  name: "Crypto Covid Fund",
-  description:
-    "A campaign by Indian Crypto Community to raise money for Covid Issues",
-  id: "0x5d7676dB6119Ed1F6C696419058310D16a734dA9",
-};
 
 function CampaignCard({ name, description, creatorId, imageURL, id }) {
   return (
@@ -53,7 +47,12 @@ function CampaignCard({ name, description, creatorId, imageURL, id }) {
           transform: "translateY(-8px)",
         }}
       >
-        <Img src={imageURL} alt={`Picture of ${name}`} roundedTop="lg" />
+        <Img
+          src={imageURL}
+          alt={`Picture of ${name}`}
+          roundedTop="lg"
+          fallbackSrc={Spinner}
+        />
 
         <Box p="6">
           <Flex
@@ -180,9 +179,13 @@ export default function Home({ campaigns }) {
           </Button>
         </Container>
         <Container p={{ base: "4", md: "12" }} maxW={"7xl"}>
-          <Heading as="h2" size="lg">
-            Open Campaigns 👇
-          </Heading>
+          <HStack spacing={2}>
+            <SkeletonCircle size="4" />
+            <Heading as="h2" size="lg">
+              Campaigns
+            </Heading>
+          </HStack>
+
           <Divider marginTop="4" />
 
           {campaignList.length > 0 ? (
