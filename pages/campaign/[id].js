@@ -1,5 +1,4 @@
 import Head from "next/head";
-import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import { useWallet } from "use-wallet";
 import { useForm } from "react-hook-form";
@@ -25,7 +24,9 @@ import {
   Alert,
   AlertIcon,
   AlertDescription,
+  Icon,
 } from "@chakra-ui/react";
+import { FaCopy, FaTwitter } from "react-icons/fa";
 import NextLink from "next/link";
 
 import web3 from "../../smart-contract/web3";

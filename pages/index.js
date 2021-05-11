@@ -23,11 +23,6 @@ import {
   SkeletonCircle,
   HStack,
   Stack,
-  Accordion,
-  AccordionItem,
-  AccordionButton,
-  AccordionPanel,
-  AccordionIcon,
 } from "@chakra-ui/react";
 
 import factory from "../smart-contract/factory";
@@ -257,7 +252,7 @@ export default function Home({ campaigns }) {
             />
             <Feature
               icon={<Icon as={FcShare} w={10} h={10} />}
-              title={"Share you Campaign"}
+              title={"Share your Campaign"}
               text={
                 "All you need to do is share the Campaign with your friends, family and others. In no time, support will start pouring in."
               }
