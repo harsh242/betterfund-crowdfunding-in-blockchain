@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import NextLink from "next/link";
-
+import { useRouter } from "next/router";
 import {
   Heading,
   useBreakpointValue,
@@ -17,7 +17,7 @@ import {
   Table,
   Thead,
   Tbody,
-  Tfoot,
+  Tooltip,
   Tr,
   Th,
   Td,
@@ -26,8 +26,9 @@ import {
   Alert,
   AlertIcon,
   AlertDescription,
+  HStack,
 } from "@chakra-ui/react";
-import { ArrowBackIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon, QuestionIcon, InfoIcon } from "@chakra-ui/icons";
 import web3 from "../../../../smart-contract/web3";
 import Campaign from "../../../../smart-contract/campaign";
 import factory from "../../../../smart-contract/factory";
@@ -57,11 +58,13 @@ export async function getStaticProps({ params }) {
       requestCount,
       approversCount,
       balance: summary[1],
+      name: summary[5],
     },
   };
 }
 
 const RequestRow = ({ id, request, approversCount, campaignId, disabled }) => {
+  const router = useRouter();
   const readyToFinalize = request.approvalCount > approversCount / 2;
   const onApprove = async () => {
     const campaign = Campaign(campaignId);
@@ -69,6 +72,7 @@ const RequestRow = ({ id, request, approversCount, campaignId, disabled }) => {
     await campaign.methods.approveRequest(id).send({
       from: accounts[0],
     });
+    router.push(`/campaign/${campaignId}/requests`);
   };
 
   const onFinalize = async () => {
@@ -77,11 +81,19 @@ const RequestRow = ({ id, request, approversCount, campaignId, disabled }) => {
     await campaign.methods.finalizeRequest(id).send({
       from: accounts[0],
     });
+    router.push(`/campaign/${campaignId}/requests`);
   };
 
   return (
-    <Tr bg={useColorModeValue("gray.100", "gray.700")}>
-      <Td>{id}</Td>
+    <Tr
+      bg={
+        readyToFinalize && !request.complete
+          ? useColorModeValue("teal.100", "teal.700")
+          : useColorModeValue("gray.100", "gray.700")
+      }
+      opacity={request.complete ? "0.4" : "1"}
+    >
+      <Td>{id} </Td>
       <Td>{request.description}</Td>
       <Td isNumeric>{web3.utils.fromWei(request.value, "ether")}</Td>
       <Td>{request.recipient.substr(0, 10) + "..."}</Td>
@@ -106,20 +118,42 @@ const RequestRow = ({ id, request, approversCount, campaignId, disabled }) => {
         )}
       </Td>
       <Td>
-        {" "}
-        {request.complete ? null : (
-          <Button
-            colorScheme="green"
-            variant="outline"
-            _hover={{
-              bg: "green.600",
-              color: "white",
-            }}
-            isDisabled={!disabled}
-            onClick={onFinalize}
+        {request.complete ? (
+          <Tooltip
+            label="This Request has been finalized & withdrawn"
+            bg={useColorModeValue("white", "gray.700")}
+            placement={"top"}
+            color={useColorModeValue("gray.800", "white")}
+            fontSize={"1.2em"}
           >
-            Finalize
-          </Button>
+            <QuestionIcon />
+          </Tooltip>
+        ) : (
+          <HStack spacing={2}>
+            <Button
+              colorScheme="green"
+              variant="outline"
+              _hover={{
+                bg: "green.600",
+                color: "white",
+              }}
+              isDisabled={!disabled}
+              onClick={onFinalize}
+            >
+              Finalize
+            </Button>
+            {readyToFinalize && !request.complete ? (
+              <Tooltip
+                label="This Request is ready to be Finalized because it has been approved by 50% Approvers"
+                bg={useColorModeValue("white", "gray.700")}
+                placement={"top"}
+                color={useColorModeValue("gray.800", "white")}
+                fontSize={"1.2em"}
+              >
+                <InfoIcon color={useColorModeValue("teal.800", "white")} />
+              </Tooltip>
+            ) : null}
+          </HStack>
         )}
       </Td>
     </Tr>
@@ -131,6 +165,7 @@ export default function Requests({
   requestCount,
   approversCount,
   balance,
+  name,
 }) {
   const [requestsList, setRequestsList] = useState([]);
   const [isFundAvailable, setIsFundAvailable] = useState(false);
@@ -174,11 +209,13 @@ export default function Requests({
           <Box p="2">
             <Text fontSize={"lg"} color={"teal.400"}>
               <ArrowBackIcon />
-              <NextLink href={`/`}> Back to Campaign</NextLink>
+              <NextLink href={`/campaign/${campaignId}`}>
+                Back to Campaign
+              </NextLink>
             </Text>
           </Box>
           {setIsFundAvailable ? (
-            <Alert status="error">
+            <Alert status="error" my={4}>
               <AlertIcon />
               <AlertDescription mr={2}>
                 The Current Balance of the Campaign is 0, Please Contribute to
@@ -193,8 +230,9 @@ export default function Requests({
                 fontFamily={"heading"}
                 color={useColorModeValue("gray.800", "white")}
                 as="h3"
+                isTruncated
               >
-                Withdrawal Requests
+                Withdrawal Requests for {name} Campaign
               </Heading>
             </Box>
             <Spacer />

@@ -40,7 +40,11 @@ export default function NewRequest() {
     try {
       const accounts = await web3.eth.getAccounts();
       await campaign.methods
-        .createRequest(data.description, web3.utils.toWei(data.value, "ether"), data.recipient)
+        .createRequest(
+          data.description,
+          web3.utils.toWei(data.value, "ether"),
+          data.recipient
+        )
         .send({ from: accounts[0] });
 
       router.push(`/campaign/${id}/requests`);
@@ -60,7 +64,9 @@ export default function NewRequest() {
         <Stack spacing={8} mx={"auto"} maxW={"2xl"} py={12} px={6}>
           <Text fontSize={"lg"} color={"teal.400"}>
             <ArrowBackIcon />
-            <NextLink href="/"> Back to Requests</NextLink>
+            <NextLink href={`/campaign/${id}/requests`}>
+              Back to Requests
+            </NextLink>
           </Text>
           <Stack>
             <Heading fontSize={"4xl"}>Create a Withdrawal Request 💸</Heading>
