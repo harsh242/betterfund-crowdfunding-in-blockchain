@@ -101,13 +101,6 @@ function StatsCard(props) {
               {stat}
             </StatNumber>
           </Box>
-          {/* <Box
-            my={"auto"}
-            color={useColorModeValue("gray.800", "gray.200")}
-            alignContent={"center"}
-          >
-            {icon}
-          </Box> */}
         </Flex>
       </Tooltip>
     </Stat>
@@ -129,7 +122,6 @@ export default function CampaignSingle({
   const { handleSubmit, errors, register, formState } = useForm();
   const [error, setError] = useState("");
   const wallet = useWallet();
-
   async function onSubmit(data) {
     console.log(data);
     try {
