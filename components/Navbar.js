@@ -85,14 +85,20 @@ export default function NavBar() {
             display={{ base: "none", md: "flex" }}
           >
             <Button
-              as={"a"}
               fontSize={"md"}
               fontWeight={600}
               variant={"link"}
-              href={"#"}
               display={{ base: "none", md: "inline-flex" }}
             >
               <NextLink href="/campaign/new">Create Campaign</NextLink>
+            </Button>
+            <Button
+              fontSize={"md"}
+              fontWeight={600}
+              variant={"link"}
+              display={{ base: "none", md: "inline-flex" }}
+            >
+              <NextLink href="/#howitworks"> How it Works</NextLink>
             </Button>
 
             {wallet.status === "connected" ? (

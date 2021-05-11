@@ -22,12 +22,50 @@ import {
   Spinner,
   SkeletonCircle,
   HStack,
+  Stack,
+  Accordion,
+  AccordionItem,
+  AccordionButton,
+  AccordionPanel,
+  AccordionIcon,
 } from "@chakra-ui/react";
 
 import factory from "../smart-contract/factory";
 import Campaign from "../smart-contract/campaign";
 
-import { FaDonate } from "react-icons/fa";
+import { FaHandshake } from "react-icons/fa";
+import { FcShare, FcDonate, FcMoneyTransfer } from "react-icons/fc";
+
+export async function getStaticProps(context) {
+  const campaigns = await factory.methods.getDeployedCampaigns().call();
+
+  console.log(campaigns);
+
+  return {
+    props: { campaigns },
+  };
+}
+
+const Feature = ({ title, text, icon }) => {
+  return (
+    <Stack>
+      <Flex
+        w={16}
+        h={16}
+        align={"center"}
+        justify={"center"}
+        color={"white"}
+        rounded={"full"}
+        bg={useColorModeValue("gray.100", "gray.700")}
+        mb={1}
+      >
+        {icon}
+      </Flex>
+      <Text fontWeight={600}>{title}</Text>
+      <Text color={useColorModeValue("gray.500", "gray.200")}>{text}</Text>
+    </Stack>
+  );
+};
 
 function CampaignCard({ name, description, creatorId, imageURL, id }) {
   return (
@@ -80,7 +118,7 @@ function CampaignCard({ name, description, creatorId, imageURL, id }) {
             >
               <chakra.a display={"flex"}>
                 <Icon
-                  as={FaDonate}
+                  as={FaHandshake}
                   h={7}
                   w={7}
                   alignSelf={"center"}
@@ -107,16 +145,6 @@ function CampaignCard({ name, description, creatorId, imageURL, id }) {
       </Box>
     </NextLink>
   );
-}
-
-export async function getStaticProps(context) {
-  const campaigns = await factory.methods.getDeployedCampaigns().call();
-
-  console.log(campaigns);
-
-  return {
-    props: { campaigns },
-  };
 }
 
 export default function Home({ campaigns }) {
@@ -153,7 +181,7 @@ export default function Home({ campaigns }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
-        <Container p={{ base: "4", md: "12" }} maxW={"7xl"} align={"left"}>
+        <Container py={{ base: "4", md: "12" }} maxW={"7xl"} align={"left"}>
           {" "}
           <Heading
             textAlign={useBreakpointValue({ base: "left" })}
@@ -162,7 +190,7 @@ export default function Home({ campaigns }) {
             as="h1"
             py={4}
           >
-            Crowdfunding using the powers of Crypto & Blockchain 😄{" "}
+            Crowdfunding using the powers of <br /> Crypto & Blockchain 😄{" "}
           </Heading>
           <Button
             display={{ sm: "inline-flex" }}
@@ -170,7 +198,6 @@ export default function Home({ campaigns }) {
             fontWeight={600}
             color={"white"}
             bg={"teal.400"}
-            href={"#"}
             _hover={{
               bg: "teal.300",
             }}
@@ -178,11 +205,11 @@ export default function Home({ campaigns }) {
             <NextLink href="/campaign/new">Create Campaign</NextLink>
           </Button>
         </Container>
-        <Container p={{ base: "4", md: "12" }} maxW={"7xl"}>
+        <Container py={{ base: "4", md: "12" }} maxW={"7xl"}>
           <HStack spacing={2}>
             <SkeletonCircle size="4" />
             <Heading as="h2" size="lg">
-              Campaigns
+              Open Campaigns
             </Heading>
           </HStack>
 
@@ -211,6 +238,38 @@ export default function Home({ campaigns }) {
               <Skeleton height="20rem" />
             </SimpleGrid>
           )}
+        </Container>
+        <Container py={{ base: "4", md: "12" }} maxW={"7xl"} id="howitworks">
+          <HStack spacing={2}>
+            <SkeletonCircle size="4" />
+            <Heading as="h2" size="lg">
+              How BetterFund Works
+            </Heading>
+          </HStack>
+          <Divider marginTop="4" />
+          <SimpleGrid columns={{ base: 1, md: 3 }} spacing={10} py={8}>
+            <Feature
+              icon={<Icon as={FcDonate} w={10} h={10} />}
+              title={"Create a Campaign for Fundraising"}
+              text={
+                "It’ll take only 2 minutes. Just enter a few details about the funds you are raising for."
+              }
+            />
+            <Feature
+              icon={<Icon as={FcShare} w={10} h={10} />}
+              title={"Share you Campaign"}
+              text={
+                "All you need to do is share the Campaign with your friends, family and others. In no time, support will start pouring in."
+              }
+            />
+            <Feature
+              icon={<Icon as={FcMoneyTransfer} w={10} h={10} />}
+              title={"Request and Withdraw Funds"}
+              text={
+                "The funds raised can be withdrawn directly to the recipient when 50% of the contributors approve of the Withdrawal Request."
+              }
+            />
+          </SimpleGrid>
         </Container>
       </main>
     </div>
