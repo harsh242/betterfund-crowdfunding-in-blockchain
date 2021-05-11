@@ -49,9 +49,9 @@ export default function NavBar() {
         }}
       >
         <Container as={Flex} maxW={"7xl"} align={"center"}>
-          <Flex flex={{ base: 1 }} justify={{ base: "center", md: "start" }}>
+          <Flex flex={{ base: 1 }} justify="start" ml={{ base: -2, md: 0 }}>
             <Heading
-              textAlign={useBreakpointValue({ base: "center", md: "left" })}
+              textAlign="left"
               fontFamily={"heading"}
               color={useColorModeValue("teal.800", "white")}
               as="h2"
@@ -77,7 +77,6 @@ export default function NavBar() {
               </Box>
             </Heading>
           </Flex>
-
           <Stack
             flex={{ base: 1, md: 0 }}
             justify={"flex-end"}
@@ -129,6 +128,10 @@ export default function NavBar() {
 
             <DarkModeSwitch />
           </Stack>
+
+          <Flex display={{ base: "flex", md: "none" }}>
+            <DarkModeSwitch />
+          </Flex>
         </Container>
       </Flex>
     </Box>
