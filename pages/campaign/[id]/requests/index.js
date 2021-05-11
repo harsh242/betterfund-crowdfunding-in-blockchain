@@ -28,8 +28,7 @@ import {
   AlertIcon,
   AlertDescription,
   HStack,
-  Spinner,
-  VStack,
+  Stack,
 } from "@chakra-ui/react";
 import { ArrowBackIcon, QuestionIcon, InfoIcon } from "@chakra-ui/icons";
 import web3 from "../../../../smart-contract/web3";
@@ -171,6 +170,7 @@ export default function Requests({
   name,
 }) {
   const [requestsList, setRequestsList] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isFundAvailable, setIsFundAvailable] = useState(false);
   const campaign = Campaign(campaignId);
   async function getRequests() {
@@ -185,7 +185,7 @@ export default function Requests({
 
       console.log("requests", requests);
       setRequestsList(requests);
-
+      setIsLoading(false);
       return requests;
     } catch (e) {
       console.log(e);
@@ -198,6 +198,7 @@ export default function Requests({
     }
     getRequests();
   }, []);
+
   return (
     <div>
       <Head>
@@ -207,183 +208,173 @@ export default function Requests({
       </Head>
 
       <main>
-        {" "}
+        <Container px={{ base: "4", md: "12" }} maxW={"7xl"} align={"left"}>
+          <Box p="2">
+            <Text fontSize={"lg"} color={"teal.400"}>
+              <ArrowBackIcon />
+              <NextLink href={`/campaign/${campaignId}`}>
+                Back to Campaign
+              </NextLink>
+            </Text>
+          </Box>
+          {setIsFundAvailable ? (
+            <Alert status="error" my={4}>
+              <AlertIcon />
+              <AlertDescription mr={2}>
+                The Current Balance of the Campaign is 0, Please Contribute to
+                approve and finalize Requests.
+              </AlertDescription>
+            </Alert>
+          ) : null}
+        </Container>
         {requestsList.length > 0 ? (
-          <div>
-            <Container p={{ base: "4", md: "12" }} maxW={"7xl"} align={"left"}>
+          <Container px={{ base: "4", md: "12" }} maxW={"7xl"} align={"left"}>
+            <Flex flexDirection={{ base: "column", md: "row" }} py={4}>
               <Box p="2">
-                <Text fontSize={"lg"} color={"teal.400"}>
-                  <ArrowBackIcon />
-                  <NextLink href={`/campaign/${campaignId}`}>
+                <Heading
+                  textAlign={useBreakpointValue({ base: "left" })}
+                  fontFamily={"heading"}
+                  color={useColorModeValue("gray.800", "white")}
+                  as="h3"
+                  isTruncated
+                >
+                  Withdrawal Requests for {name} Campaign
+                </Heading>
+              </Box>
+              <Spacer />
+              <Box p="2">
+                {" "}
+                <Button
+                  display={{ sm: "inline-flex" }}
+                  justify={"flex-end"}
+                  fontSize={"md"}
+                  fontWeight={600}
+                  color={"white"}
+                  bg={"teal.400"}
+                  href={"#"}
+                  _hover={{
+                    bg: "teal.300",
+                  }}
+                >
+                  <NextLink href={`/campaign/${campaignId}/requests/new`}>
+                    Add Withdrawal Request
+                  </NextLink>
+                </Button>
+              </Box>
+            </Flex>{" "}
+            <Divider />
+            <Box overflowX="auto">
+              <Table>
+                <TableCaption textAlign="left">
+                  Found {requestCount} Requests
+                </TableCaption>
+                <Thead>
+                  <Tr>
+                    <Th>ID</Th>
+                    <Th w="30%">Description</Th>
+                    <Th isNumeric>Amount</Th>
+                    <Th maxW="12%" isTruncated>
+                      Recipient Wallet Address
+                    </Th>
+                    <Th>Approval Count </Th>
+                    <Th>Approve </Th>
+                    <Th>Finalize </Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {requestsList.map((request, index) => {
+                    return (
+                      <RequestRow
+                        key={index}
+                        id={index}
+                        request={request}
+                        approversCount={approversCount}
+                        campaignId={campaignId}
+                        disabled={isFundAvailable}
+                      />
+                    );
+                  })}
+                </Tbody>
+              </Table>
+            </Box>
+          </Container>
+        ) : (
+          <div>
+            <Container
+              px={{ base: "4", md: "12" }}
+              maxW={"7xl"}
+              align={"left"}
+              display={isLoading === 0 ? "block" : "none"}
+            >
+              <SimpleGrid rows={{ base: 3 }} spacing={2}>
+                <Skeleton height="2rem" />
+                <Skeleton height="5rem" />
+                <Skeleton height="5rem" />
+              </SimpleGrid>
+            </Container>
+            <Container
+              maxW={"lg"}
+              align={"center"}
+              display={
+                requestsList.length === 0 && !isLoading ? "block" : "none"
+              }
+            >
+              <SimpleGrid row spacing={2} align="center">
+                <Stack align="center">
+                  <NextImage
+                    src="/static/no-requests.png"
+                    alt="no-request"
+                    width="150"
+                    height="150"
+                  />
+                </Stack>
+                <Heading
+                  textAlign={"center"}
+                  color={useColorModeValue("gray.800", "white")}
+                  as="h4"
+                  size="md"
+                >
+                  No Requests yet for {name} Campaign
+                </Heading>
+                <Text
+                  textAlign={useBreakpointValue({ base: "center" })}
+                  color={useColorModeValue("gray.600", "gray.300")}
+                  fontSize="sm"
+                >
+                  Create a Withdrawal Request to Withdraw funds from the
+                  Campaign😄
+                </Text>
+
+                <Button
+                  fontSize={"md"}
+                  fontWeight={600}
+                  color={"white"}
+                  bg={"teal.400"}
+                  _hover={{
+                    bg: "teal.300",
+                  }}
+                >
+                  <NextLink href={`/campaign/${campaignId}/requests/new`}>
+                    Create Withdrawal Request
+                  </NextLink>
+                </Button>
+
+                <Button
+                  fontSize={"md"}
+                  fontWeight={600}
+                  color={"white"}
+                  bg={"gray.400"}
+                  _hover={{
+                    bg: "gray.300",
+                  }}
+                >
+                  <NextLink href={`/campaign/${campaignId}/`}>
                     Back to Campaign
                   </NextLink>
-                </Text>
-              </Box>
-              {setIsFundAvailable ? (
-                <Alert status="error" my={4}>
-                  <AlertIcon />
-                  <AlertDescription mr={2}>
-                    The Current Balance of the Campaign is 0, Please Contribute
-                    to approve and finalize Requests.
-                  </AlertDescription>
-                </Alert>
-              ) : null}
-              <Flex flexDirection={{ base: "column", md: "row" }}>
-                <Box p="2">
-                  <Heading
-                    textAlign={useBreakpointValue({ base: "left" })}
-                    fontFamily={"heading"}
-                    color={useColorModeValue("gray.800", "white")}
-                    as="h3"
-                    isTruncated
-                  >
-                    Withdrawal Requests for {name} Campaign
-                  </Heading>
-                </Box>
-                <Spacer />
-                <Box p="2">
-                  {" "}
-                  <Button
-                    display={{ sm: "inline-flex" }}
-                    justify={"flex-end"}
-                    fontSize={"md"}
-                    fontWeight={600}
-                    color={"white"}
-                    bg={"teal.400"}
-                    href={"#"}
-                    _hover={{
-                      bg: "teal.300",
-                    }}
-                  >
-                    <NextLink href={`/campaign/${campaignId}/requests/new`}>
-                      Add Withdrawal Request
-                    </NextLink>
-                  </Button>
-                </Box>
-              </Flex>{" "}
+                </Button>
+              </SimpleGrid>
             </Container>
-            {requestsList.length > 0 ? (
-              <Container
-                px={{ base: "4", md: "12" }}
-                maxW={"7xl"}
-                align={"left"}
-              >
-                <Divider />
-                <Box overflowX="auto">
-                  <Table>
-                    <TableCaption textAlign="left">
-                      Found {requestCount} Requests
-                    </TableCaption>
-                    <Thead>
-                      <Tr>
-                        <Th>ID</Th>
-                        <Th w="30%">Description</Th>
-                        <Th isNumeric>Amount</Th>
-                        <Th maxW="12%" isTruncated>
-                          Recipient Wallet Address
-                        </Th>
-                        <Th>Approval Count </Th>
-                        <Th>Approve </Th>
-                        <Th>Finalize </Th>
-                      </Tr>
-                    </Thead>
-                    <Tbody>
-                      {requestsList.map((request, index) => {
-                        return (
-                          <RequestRow
-                            key={index}
-                            id={index}
-                            request={request}
-                            approversCount={approversCount}
-                            campaignId={campaignId}
-                            disabled={isFundAvailable}
-                          />
-                        );
-                      })}
-                    </Tbody>
-                  </Table>
-                </Box>
-              </Container>
-            ) : (
-              <Container
-                px={{ base: "4", md: "12" }}
-                maxW={"7xl"}
-                align={"left"}
-              >
-                <SimpleGrid rows={{ base: 3 }} spacing={2}>
-                  <Skeleton height="2rem" />
-                  <Skeleton height="5rem" />
-                  <Skeleton height="5rem" />
-                </SimpleGrid>
-              </Container>
-            )}
           </div>
-        ) : (
-          <Container p={{ base: "4", md: "12" }} maxW={"2xl"}>
-            <Box p="2">
-              <Text fontSize={"lg"} color={"teal.400"}>
-                <ArrowBackIcon />
-                <NextLink href={`/campaign/${campaignId}`}>
-                  Back to Campaign
-                </NextLink>
-              </Text>
-            </Box>
-            <VStack spacing={3} align={"center"}>
-              <NextImage
-                src="/static/no-requests.png"
-                alt="no-request"
-                width="150"
-                height="150"
-              />
-              <Heading
-                textAlign={useBreakpointValue({ base: "center" })}
-                fontFamily={"heading"}
-                color={useColorModeValue("gray.800", "white")}
-                as="h4"
-                isTruncated
-                size="md"
-              >
-                No Requests yet for {name} Campaign
-              </Heading>
-              <Text
-                textAlign={useBreakpointValue({ base: "center" })}
-                color={useColorModeValue("gray.600", "gray.300")}
-                isTruncated
-                fontSize="sm"
-              >
-                Create a Withdrawal Request to Withdraw funds from the
-                Campaign😄
-              </Text>
-
-              <Button
-                fontSize={"md"}
-                fontWeight={600}
-                color={"white"}
-                bg={"teal.400"}
-                _hover={{
-                  bg: "teal.300",
-                }}
-              >
-                <NextLink href={`/campaign/${campaignId}/requests/new`}>
-                  Create Withdrawal Request
-                </NextLink>
-              </Button>
-
-              <Button
-                fontSize={"md"}
-                fontWeight={600}
-                color={"white"}
-                bg={"gray.400"}
-                _hover={{
-                  bg: "gray.300",
-                }}
-              >
-                <NextLink href={`/campaign/${campaignId}/`}>
-                  Back to Campaign
-                </NextLink>
-              </Button>
-            </VStack>
-          </Container>
         )}
       </main>
     </div>
