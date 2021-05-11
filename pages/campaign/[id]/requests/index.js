@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import NextLink from "next/link";
+import NextImage from "next/image";
 import { useRouter } from "next/router";
 import {
   Heading,
@@ -27,6 +28,8 @@ import {
   AlertIcon,
   AlertDescription,
   HStack,
+  Spinner,
+  VStack,
 } from "@chakra-ui/react";
 import { ArrowBackIcon, QuestionIcon, InfoIcon } from "@chakra-ui/icons";
 import web3 from "../../../../smart-contract/web3";
@@ -205,103 +208,181 @@ export default function Requests({
 
       <main>
         {" "}
-        <Container p={{ base: "4", md: "12" }} maxW={"7xl"} align={"left"}>
-          <Box p="2">
-            <Text fontSize={"lg"} color={"teal.400"}>
-              <ArrowBackIcon />
-              <NextLink href={`/campaign/${campaignId}`}>
-                Back to Campaign
-              </NextLink>
-            </Text>
-          </Box>
-          {setIsFundAvailable ? (
-            <Alert status="error" my={4}>
-              <AlertIcon />
-              <AlertDescription mr={2}>
-                The Current Balance of the Campaign is 0, Please Contribute to
-                approve and finalize Requests.
-              </AlertDescription>
-            </Alert>
-          ) : null}
-          <Flex flexDirection={{ base: "column", md: "row" }}>
+        {requestsList.length > 0 ? (
+          <div>
+            <Container p={{ base: "4", md: "12" }} maxW={"7xl"} align={"left"}>
+              <Box p="2">
+                <Text fontSize={"lg"} color={"teal.400"}>
+                  <ArrowBackIcon />
+                  <NextLink href={`/campaign/${campaignId}`}>
+                    Back to Campaign
+                  </NextLink>
+                </Text>
+              </Box>
+              {setIsFundAvailable ? (
+                <Alert status="error" my={4}>
+                  <AlertIcon />
+                  <AlertDescription mr={2}>
+                    The Current Balance of the Campaign is 0, Please Contribute
+                    to approve and finalize Requests.
+                  </AlertDescription>
+                </Alert>
+              ) : null}
+              <Flex flexDirection={{ base: "column", md: "row" }}>
+                <Box p="2">
+                  <Heading
+                    textAlign={useBreakpointValue({ base: "left" })}
+                    fontFamily={"heading"}
+                    color={useColorModeValue("gray.800", "white")}
+                    as="h3"
+                    isTruncated
+                  >
+                    Withdrawal Requests for {name} Campaign
+                  </Heading>
+                </Box>
+                <Spacer />
+                <Box p="2">
+                  {" "}
+                  <Button
+                    display={{ sm: "inline-flex" }}
+                    justify={"flex-end"}
+                    fontSize={"md"}
+                    fontWeight={600}
+                    color={"white"}
+                    bg={"teal.400"}
+                    href={"#"}
+                    _hover={{
+                      bg: "teal.300",
+                    }}
+                  >
+                    <NextLink href={`/campaign/${campaignId}/requests/new`}>
+                      Add Withdrawal Request
+                    </NextLink>
+                  </Button>
+                </Box>
+              </Flex>{" "}
+            </Container>
+            {requestsList.length > 0 ? (
+              <Container
+                px={{ base: "4", md: "12" }}
+                maxW={"7xl"}
+                align={"left"}
+              >
+                <Divider />
+                <Box overflowX="auto">
+                  <Table>
+                    <TableCaption textAlign="left">
+                      Found {requestCount} Requests
+                    </TableCaption>
+                    <Thead>
+                      <Tr>
+                        <Th>ID</Th>
+                        <Th w="30%">Description</Th>
+                        <Th isNumeric>Amount</Th>
+                        <Th maxW="12%" isTruncated>
+                          Recipient Wallet Address
+                        </Th>
+                        <Th>Approval Count </Th>
+                        <Th>Approve </Th>
+                        <Th>Finalize </Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>
+                      {requestsList.map((request, index) => {
+                        return (
+                          <RequestRow
+                            key={index}
+                            id={index}
+                            request={request}
+                            approversCount={approversCount}
+                            campaignId={campaignId}
+                            disabled={isFundAvailable}
+                          />
+                        );
+                      })}
+                    </Tbody>
+                  </Table>
+                </Box>
+              </Container>
+            ) : (
+              <Container
+                px={{ base: "4", md: "12" }}
+                maxW={"7xl"}
+                align={"left"}
+              >
+                <SimpleGrid rows={{ base: 3 }} spacing={2}>
+                  <Skeleton height="2rem" />
+                  <Skeleton height="5rem" />
+                  <Skeleton height="5rem" />
+                </SimpleGrid>
+              </Container>
+            )}
+          </div>
+        ) : (
+          <Container p={{ base: "4", md: "12" }} maxW={"2xl"}>
             <Box p="2">
+              <Text fontSize={"lg"} color={"teal.400"}>
+                <ArrowBackIcon />
+                <NextLink href={`/campaign/${campaignId}`}>
+                  Back to Campaign
+                </NextLink>
+              </Text>
+            </Box>
+            <VStack spacing={3} align={"center"}>
+              <NextImage
+                src="/static/no-requests.png"
+                alt="no-request"
+                width="150"
+                height="150"
+              />
               <Heading
-                textAlign={useBreakpointValue({ base: "left" })}
+                textAlign={useBreakpointValue({ base: "center" })}
                 fontFamily={"heading"}
                 color={useColorModeValue("gray.800", "white")}
-                as="h3"
+                as="h4"
                 isTruncated
+                size="md"
               >
-                Withdrawal Requests for {name} Campaign
+                No Requests yet for {name} Campaign
               </Heading>
-            </Box>
-            <Spacer />
-            <Box p="2">
-              {" "}
+              <Text
+                textAlign={useBreakpointValue({ base: "center" })}
+                color={useColorModeValue("gray.600", "gray.300")}
+                isTruncated
+                fontSize="sm"
+              >
+                Create a Withdrawal Request to Withdraw funds from the
+                Campaign😄
+              </Text>
+
               <Button
-                display={{ sm: "inline-flex" }}
-                justify={"flex-end"}
                 fontSize={"md"}
                 fontWeight={600}
                 color={"white"}
                 bg={"teal.400"}
-                href={"#"}
                 _hover={{
                   bg: "teal.300",
                 }}
               >
                 <NextLink href={`/campaign/${campaignId}/requests/new`}>
-                  Add Withdrawal Request
+                  Create Withdrawal Request
                 </NextLink>
               </Button>
-            </Box>
-          </Flex>{" "}
-        </Container>
-        {requestsList.length > 0 ? (
-          <Container px={{ base: "4", md: "12" }} maxW={"7xl"} align={"left"}>
-            <Divider />
-            <Box overflowX="auto">
-              <Table>
-                <TableCaption textAlign="left">
-                  Found {requestCount} Requests
-                </TableCaption>
-                <Thead>
-                  <Tr>
-                    <Th>ID</Th>
-                    <Th w="30%">Description</Th>
-                    <Th isNumeric>Amount</Th>
-                    <Th maxW="12%" isTruncated>
-                      Recipient Wallet Address
-                    </Th>
-                    <Th>Approval Count </Th>
-                    <Th>Approve </Th>
-                    <Th>Finalize </Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {requestsList.map((request, index) => {
-                    return (
-                      <RequestRow
-                        key={index}
-                        id={index}
-                        request={request}
-                        approversCount={approversCount}
-                        campaignId={campaignId}
-                        disabled={isFundAvailable}
-                      />
-                    );
-                  })}
-                </Tbody>
-              </Table>
-            </Box>
-          </Container>
-        ) : (
-          <Container px={{ base: "4", md: "12" }} maxW={"7xl"} align={"left"}>
-            <SimpleGrid rows={{ base: 3 }} spacing={2}>
-              <Skeleton height="2rem" />
-              <Skeleton height="5rem" />
-              <Skeleton height="5rem" />
-            </SimpleGrid>
+
+              <Button
+                fontSize={"md"}
+                fontWeight={600}
+                color={"white"}
+                bg={"gray.400"}
+                _hover={{
+                  bg: "gray.300",
+                }}
+              >
+                <NextLink href={`/campaign/${campaignId}/`}>
+                  Back to Campaign
+                </NextLink>
+              </Button>
+            </VStack>
           </Container>
         )}
       </main>
