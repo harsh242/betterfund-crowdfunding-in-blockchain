@@ -2,6 +2,7 @@ import Head from "next/head";
 import { useState, useEffect } from "react";
 import { useWallet } from "use-wallet";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/router";
 import {
   Box,
   Flex,
@@ -25,8 +26,10 @@ import {
   AlertIcon,
   AlertDescription,
   Icon,
+  Progress,
 } from "@chakra-ui/react";
 import { FaCopy, FaTwitter } from "react-icons/fa";
+import { InfoIcon } from "@chakra-ui/icons";
 import NextLink from "next/link";
 
 import web3 from "../../smart-contract/web3";
@@ -120,9 +123,10 @@ export default function CampaignSingle({
   image,
   target,
 }) {
-  const { handleSubmit, errors, register, formState } = useForm();
+  const { handleSubmit, errors, register, formState, reset } = useForm();
   const [error, setError] = useState("");
   const wallet = useWallet();
+  const router = useRouter();
   async function onSubmit(data) {
     console.log(data);
     try {
@@ -131,6 +135,10 @@ export default function CampaignSingle({
       await campaign.methods.contibute().send({
         from: accounts[0],
         value: web3.utils.toWei(data.value, "ether"),
+      });
+      router.push(`/campaign/${id}`);
+      reset("", {
+        keepValues: false,
       });
     } catch (err) {
       setError(err.message);
@@ -203,29 +211,57 @@ export default function CampaignSingle({
             </Stack>
             <Stack maxW={{ lg: "lg" }} spacing={{ base: 4 }}>
               <Stat
-                bg={useColorModeValue("teal.50", "teal.700")}
+                bg={useColorModeValue("white", "gray.700")}
                 boxShadow={"lg"}
                 rounded={"xl"}
                 p={{ base: 4, sm: 6, md: 8 }}
                 spacing={{ base: 8 }}
               >
-                <StatLabel fontWeight={"medium"} isTruncated>
-                  Campaign Balance (Ether)
+                <StatLabel fontWeight={"medium"}>
+                  <Text as="span" isTruncated mr={2}>
+                    {" "}
+                    Campaign Balance
+                  </Text>
+                  <Tooltip
+                    label="The balance is how much money this campaign has left to
+                  spend."
+                    bg={useColorModeValue("white", "gray.700")}
+                    placement={"top"}
+                    color={useColorModeValue("gray.800", "white")}
+                    fontSize={"1em"}
+                    px="4"
+                  >
+                    <InfoIcon color={useColorModeValue("teal.800", "white")} />
+                  </Tooltip>
                 </StatLabel>
-                <StatNumber
-                  fontSize={"xl"}
-                  fontWeight={"bold"}
-                  isTruncated
-                  maxW={{ base: "	10rem", sm: "sm" }}
-                >
-                  {balance > 0
-                    ? web3.utils.fromWei(balance, "ether")
-                    : "0, Become our First Donor 😄"}
+                <StatNumber>
+                  <Text
+                    fontSize={"2xl"}
+                    fontWeight={"bold"}
+                    isTruncated
+                    maxW={{ base: "	15rem", sm: "sm" }}
+                    pt="2"
+                  >
+                    {balance > 0
+                      ? web3.utils.fromWei(balance, "ether")
+                      : "0, Become a Donor 😄"}
+                    <Text as="span" display={balance > 0 ? "inline" : "none"}>
+                      {" "}
+                      ETH
+                    </Text>
+                  </Text>
+
+                  <Text fontSize={"md"} fontWeight="normal">
+                    target of <Text as="span">{target} ETH</Text>
+                  </Text>
+                  <Progress
+                    colorScheme="teal"
+                    size="sm"
+                    value={web3.utils.fromWei(balance, "ether")}
+                    max={target}
+                    mt={4}
+                  />
                 </StatNumber>
-                <Text fontSize={"sm"} mt={"2"}>
-                  * The balance is how much money this campaign has left to
-                  spend.
-                </Text>
               </Stat>
 
               <Stack
@@ -259,7 +295,7 @@ export default function CampaignSingle({
                       </FormControl>
 
                       {error ? (
-                        <Alert status="error">
+                        <Alert status="error" mt="2">
                           <AlertIcon />
                           <AlertDescription mr={2}> {error}</AlertDescription>
                         </Alert>

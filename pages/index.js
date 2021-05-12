@@ -23,9 +23,11 @@ import {
   SkeletonCircle,
   HStack,
   Stack,
+  Progress,
 } from "@chakra-ui/react";
 
 import factory from "../smart-contract/factory";
+import web3 from "../smart-contract/web3";
 import Campaign from "../smart-contract/campaign";
 
 import { FaHandshake } from "react-icons/fa";
@@ -62,83 +64,124 @@ const Feature = ({ title, text, icon }) => {
   );
 };
 
-function CampaignCard({ name, description, creatorId, imageURL, id }) {
+function CampaignCard({
+  name,
+  description,
+  creatorId,
+  imageURL,
+  id,
+  balance,
+  target,
+}) {
   return (
-    <NextLink href={`/campaign/${id}`}>
-      <Box
-        bg={useColorModeValue("white", "gray.800")}
-        maxW={{ base: "xs", md: "sm" }}
-        borderWidth="1px"
-        rounded="lg"
-        shadow="lg"
-        position="relative"
-        alignItems="center"
-        justifyContent="center"
-        cursor="pointer"
-        transition={"transform 0.3s ease"}
-        _hover={{
-          transform: "translateY(-8px)",
-        }}
-      >
+    <Box
+      bg={useColorModeValue("white", "gray.800")}
+      maxW={{ md: "sm" }}
+      borderWidth="1px"
+      rounded="lg"
+      shadow="lg"
+      position="relative"
+      alignItems="center"
+      justifyContent="center"
+      cursor="pointer"
+      transition={"transform 0.3s ease"}
+      _hover={{
+        transform: "translateY(-8px)",
+      }}
+    >
+      <Box height="18em">
         <Img
           src={imageURL}
           alt={`Picture of ${name}`}
           roundedTop="lg"
           fallbackSrc={Spinner}
+          objectFit="cover"
+          w="full"
+          h="full"
+          display="block"
         />
-
-        <Box p="6">
-          <Flex
-            mt="1"
-            justifyContent="space-between"
-            alignContent="center"
-            py={2}
-          >
-            <Box
-              fontSize="2xl"
-              fontWeight="semibold"
-              as="h4"
-              lineHeight="tight"
-              isTruncated
-            >
-              {name}
-            </Box>
-
-            <Tooltip
-              label="Contribute"
-              bg={useColorModeValue("white", "gray.700")}
-              placement={"top"}
-              color={useColorModeValue("gray.800", "white")}
-              fontSize={"1.2em"}
-            >
-              <chakra.a display={"flex"}>
-                <Icon
-                  as={FaHandshake}
-                  h={7}
-                  w={7}
-                  alignSelf={"center"}
-                  color={"teal.400"}
-                />{" "}
-              </chakra.a>
-            </Tooltip>
-          </Flex>
-          <Flex justifyContent="space-between" alignContent="center" py={2}>
-            <Text color={"gray.500"} isTruncated>
-              {description}
-            </Text>{" "}
-          </Flex>
-          <Flex alignContent="center" py={4}>
-            {" "}
-            <Text color={"gray.500"} pr={2}>
-              by
-            </Text>{" "}
-            <Heading size="base" isTruncated>
-              {creatorId}
-            </Heading>
-          </Flex>
-        </Box>
       </Box>
-    </NextLink>
+      <Box p="6">
+        <Flex
+          mt="1"
+          justifyContent="space-between"
+          alignContent="center"
+          py={2}
+        >
+          <Box
+            fontSize="2xl"
+            fontWeight="semibold"
+            as="h4"
+            lineHeight="tight"
+            isTruncated
+          >
+            {name}
+          </Box>
+
+          <Tooltip
+            label="Contribute"
+            bg={useColorModeValue("white", "gray.700")}
+            placement={"top"}
+            color={useColorModeValue("gray.800", "white")}
+            fontSize={"1.2em"}
+          >
+            <chakra.a display={"flex"}>
+              <Icon
+                as={FaHandshake}
+                h={7}
+                w={7}
+                alignSelf={"center"}
+                color={"teal.400"}
+              />{" "}
+            </chakra.a>
+          </Tooltip>
+        </Flex>
+        <Flex alignContent="center" py={2}>
+          {" "}
+          <Text color={"gray.500"} pr={2}>
+            by
+          </Text>{" "}
+          <Heading size="base" isTruncated>
+            {creatorId}
+          </Heading>
+        </Flex>
+        <Flex direction="row" py={2}>
+          <Box w="full">
+            <Text
+              fontSize={"xl"}
+              fontWeight={"bold"}
+              isTruncated
+              maxW={{ base: "	15rem", sm: "sm" }}
+              pt="2"
+            >
+              {balance > 0
+                ? web3.utils.fromWei(balance, "ether")
+                : "0, Become a Donor 😄"}
+              <Text as="span" display={balance > 0 ? "inline" : "none"}>
+                {" "}
+                ETH
+              </Text>
+            </Text>
+
+            <Text
+              fontSize={"md"}
+              fontWeight="normal"
+              color={useColorModeValue("gray.500", "gray.400")}
+            >
+              target of <Text as="span">{target} ETH</Text>
+            </Text>
+
+            <Progress
+              colorScheme="teal"
+              size="sm"
+              value={web3.utils.fromWei(balance, "ether")}
+              max={target}
+              mt="2"
+            />
+          </Box>{" "}
+        </Flex>
+      </Box>
+    </Box>
   );
 }
 
@@ -221,6 +264,8 @@ export default function Home({ campaigns }) {
                       creatorId={el[4]}
                       imageURL={el[7]}
                       id={campaigns[i]}
+                      target={el[8]}
+                      balance={el[1]}
                     />
                   </div>
                 );
@@ -228,9 +273,9 @@ export default function Home({ campaigns }) {
             </SimpleGrid>
           ) : (
             <SimpleGrid columns={{ base: 1, md: 3 }} spacing={10} py={8}>
-              <Skeleton height="20rem" />
-              <Skeleton height="20rem" />
-              <Skeleton height="20rem" />
+              <Skeleton height="25rem" />
+              <Skeleton height="25rem" />
+              <Skeleton height="25rem" />
             </SimpleGrid>
           )}
         </Container>
