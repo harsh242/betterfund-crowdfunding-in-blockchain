@@ -5,6 +5,11 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import { useWindowSize } from "react-use";
 import {
+  getETHPrice,
+  getETHPriceInUSD,
+  getWEIPriceInUSD,
+} from "../../lib/getETHPrice";
+import {
   Box,
   Flex,
   Stack,
@@ -29,8 +34,9 @@ import {
   Icon,
   Progress,
   CloseButton,
+  FormHelperText,
 } from "@chakra-ui/react";
-import { FaCopy, FaTwitter } from "react-icons/fa";
+
 import { InfoIcon } from "@chakra-ui/icons";
 import NextLink from "next/link";
 import Confetti from "react-confetti";
@@ -55,6 +61,7 @@ export async function getStaticProps({ params }) {
   const campaignId = params.id;
   const campaign = Campaign(campaignId);
   const summary = await campaign.methods.getSummary().call();
+  const ETHPrice = await getETHPrice();
 
   return {
     props: {
@@ -68,6 +75,7 @@ export async function getStaticProps({ params }) {
       description: summary[6],
       image: summary[7],
       target: summary[8],
+      ETHPrice,
     },
   };
 }
@@ -125,8 +133,9 @@ export default function CampaignSingle({
   description,
   image,
   target,
+  ETHPrice,
 }) {
-  const { handleSubmit, register, formState, reset } = useForm();
+  const { handleSubmit, register, formState, reset, getValues } = useForm();
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState("");
   const wallet = useWallet();
@@ -209,8 +218,14 @@ export default function CampaignSingle({
               <Box mx={"auto"} w={"full"}>
                 <SimpleGrid columns={{ base: 1 }} spacing={{ base: 5 }}>
                   <StatsCard
-                    title={"Minimum Contribution in Wei"}
-                    stat={minimumContribution}
+                    title={"Minimum Contribution"}
+                    stat={`${web3.utils.fromWei(
+                      minimumContribution,
+                      "ether"
+                    )} ETH ($${getWEIPriceInUSD(
+                      ETHPrice,
+                      minimumContribution
+                    )})`}
                     info={
                       "You must contribute at least this much in Wei ( 1 ETH = 10 ^ 18 Wei) to become an approver"
                     }
@@ -265,24 +280,40 @@ export default function CampaignSingle({
                   </Tooltip>
                 </StatLabel>
                 <StatNumber>
-                  <Text
+                  <Box
                     fontSize={"2xl"}
-                    fontWeight={"bold"}
                     isTruncated
                     maxW={{ base: "	15rem", sm: "sm" }}
                     pt="2"
                   >
-                    {balance > 0
-                      ? web3.utils.fromWei(balance, "ether")
-                      : "0, Become a Donor 😄"}
-                    <Text as="span" display={balance > 0 ? "inline" : "none"}>
+                    <Text as="span" fontWeight={"bold"}>
+                      {balance > 0
+                        ? web3.utils.fromWei(balance, "ether")
+                        : "0, Become a Donor 😄"}
+                    </Text>
+                    <Text
+                      as="span"
+                      display={balance > 0 ? "inline" : "none"}
+                      pr={2}
+                      fontWeight={"bold"}
+                    >
                       {" "}
                       ETH
                     </Text>
-                  </Text>
+                    <Text
+                      as="span"
+                      fontSize="lg"
+                      display={balance > 0 ? "inline" : "none"}
+                      fontWeight={"normal"}
+                      color={useColorModeValue("gray.500", "gray.200")}
+                    >
+                      (${getWEIPriceInUSD(ETHPrice, balance)})
+                    </Text>
+                  </Box>
 
                   <Text fontSize={"md"} fontWeight="normal">
-                    target of <Text as="span">{target} ETH</Text>
+                    target of {target} ETH ($
+                    {getETHPriceInUSD(ETHPrice, target)})
                   </Text>
                   <Progress
                     colorScheme="teal"

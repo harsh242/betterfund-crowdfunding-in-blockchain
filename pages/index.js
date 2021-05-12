@@ -2,7 +2,11 @@ import Head from "next/head";
 import { useEffect, useState } from "react";
 import NextLink from "next/link";
 import styles from "../styles/Home.module.css";
-import { motion } from "framer-motion";
+import {
+  getETHPrice,
+  getETHPriceInUSD,
+  getWEIPriceInUSD,
+} from "../lib/getETHPrice";
 import {
   Heading,
   useBreakpointValue,
@@ -72,6 +76,7 @@ function CampaignCard({
   id,
   balance,
   target,
+  ethPrice,
 }) {
   return (
     <Box
@@ -94,7 +99,6 @@ function CampaignCard({
           src={imageURL}
           alt={`Picture of ${name}`}
           roundedTop="lg"
-          fallbackSrc={Spinner}
           objectFit="cover"
           w="full"
           h="full"
@@ -147,30 +151,40 @@ function CampaignCard({
         </Flex>
         <Flex direction="row" py={2}>
           <Box w="full">
-            <Text
-              fontSize={"xl"}
-              fontWeight={"bold"}
+            <Box
+              fontSize={"2xl"}
               isTruncated
               maxW={{ base: "	15rem", sm: "sm" }}
               pt="2"
             >
-              {balance > 0
-                ? web3.utils.fromWei(balance, "ether")
-                : "0, Become a Donor 😄"}
-              <Text as="span" display={balance > 0 ? "inline" : "none"}>
+              <Text as="span" fontWeight={"bold"}>
+                {balance > 0
+                  ? web3.utils.fromWei(balance, "ether")
+                  : "0, Become a Donor 😄"}
+              </Text>
+              <Text
+                as="span"
+                display={balance > 0 ? "inline" : "none"}
+                pr={2}
+                fontWeight={"bold"}
+              >
                 {" "}
                 ETH
               </Text>
-            </Text>
+              <Text
+                as="span"
+                fontSize="lg"
+                display={balance > 0 ? "inline" : "none"}
+                fontWeight={"normal"}
+                color={useColorModeValue("gray.500", "gray.200")}
+              >
+                (${getWEIPriceInUSD(ethPrice, balance)})
+              </Text>
+            </Box>
 
-            <Text
-              fontSize={"md"}
-              fontWeight="normal"
-              color={useColorModeValue("gray.500", "gray.400")}
-            >
-              target of <Text as="span">{target} ETH</Text>
+            <Text fontSize={"md"} fontWeight="normal">
+              target of {target} ETH (${getETHPriceInUSD(ethPrice, target)})
             </Text>
-
             <Progress
               colorScheme="teal"
               size="sm"
@@ -187,6 +201,7 @@ function CampaignCard({
 
 export default function Home({ campaigns }) {
   const [campaignList, setCampaignList] = useState([]);
+  const [ethPrice, updateEthPrice] = useState(null);
 
   async function getSummary() {
     try {
@@ -195,6 +210,8 @@ export default function Home({ campaigns }) {
           Campaign(campaigns[i]).methods.getSummary().call()
         )
       );
+      const ETHPrice = await getETHPrice();
+      updateEthPrice(ETHPrice);
       console.log("summary ", summary);
       setCampaignList(summary);
 
@@ -266,6 +283,7 @@ export default function Home({ campaigns }) {
                       id={campaigns[i]}
                       target={el[8]}
                       balance={el[1]}
+                      ethPrice={ethPrice}
                     />
                   </div>
                 );

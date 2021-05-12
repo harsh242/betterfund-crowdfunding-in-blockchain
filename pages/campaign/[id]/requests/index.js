@@ -4,6 +4,10 @@ import NextLink from "next/link";
 import NextImage from "next/image";
 import { useRouter } from "next/router";
 import {
+  getETHPrice,
+  getWEIPriceInUSD,
+} from "../../../../lib/getETHPrice";
+import {
   Heading,
   useBreakpointValue,
   useColorModeValue,
@@ -30,12 +34,7 @@ import {
   HStack,
   Stack,
 } from "@chakra-ui/react";
-import {
-  ArrowBackIcon,
-  QuestionIcon,
-  InfoIcon,
-  CheckCircleIcon,
-} from "@chakra-ui/icons";
+import { ArrowBackIcon, InfoIcon, CheckCircleIcon } from "@chakra-ui/icons";
 import web3 from "../../../../smart-contract/web3";
 import Campaign from "../../../../smart-contract/campaign";
 import factory from "../../../../smart-contract/factory";
@@ -58,6 +57,7 @@ export async function getStaticProps({ params }) {
   const requestCount = await campaign.methods.getRequestsCount().call();
   const approversCount = await campaign.methods.approversCount().call();
   const summary = await campaign.methods.getSummary().call();
+  const ETHPrice = await getETHPrice();
 
   return {
     props: {
@@ -66,11 +66,19 @@ export async function getStaticProps({ params }) {
       approversCount,
       balance: summary[1],
       name: summary[5],
+      ETHPrice,
     },
   };
 }
 
-const RequestRow = ({ id, request, approversCount, campaignId, disabled }) => {
+const RequestRow = ({
+  id,
+  request,
+  approversCount,
+  campaignId,
+  disabled,
+  ETHPrice,
+}) => {
   const router = useRouter();
   const readyToFinalize = request.approvalCount > approversCount / 2;
   const onApprove = async () => {
@@ -102,7 +110,10 @@ const RequestRow = ({ id, request, approversCount, campaignId, disabled }) => {
     >
       <Td>{id} </Td>
       <Td>{request.description}</Td>
-      <Td isNumeric>{web3.utils.fromWei(request.value, "ether")}</Td>
+      <Td isNumeric>
+        {web3.utils.fromWei(request.value, "ether")}ETH ($
+        {getWEIPriceInUSD(ETHPrice, request.value)})
+      </Td>
       <Td>{request.recipient.substr(0, 10) + "..."}</Td>
       <Td>
         {request.approvalCount}/{approversCount}
@@ -187,6 +198,7 @@ export default function Requests({
   approversCount,
   balance,
   name,
+  ETHPrice,
 }) {
   const [requestsList, setRequestsList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -310,6 +322,7 @@ export default function Requests({
                         approversCount={approversCount}
                         campaignId={campaignId}
                         disabled={FundNotAvailable}
+                        ETHPrice={ETHPrice}
                       />
                     );
                   })}
