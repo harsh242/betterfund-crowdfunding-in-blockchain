@@ -30,7 +30,9 @@ import Campaign from "../../../../smart-contract/campaign";
 export default function NewRequest() {
   const router = useRouter();
   const { id } = router.query;
-  const { handleSubmit, errors, register, formState } = useForm();
+  const { handleSubmit, errors, register, formState } = useForm({
+    mode: "onChange",
+  });
   const [error, setError] = useState("");
   const wallet = useWallet();
 
@@ -62,7 +64,7 @@ export default function NewRequest() {
       </Head>
       <main>
         <Stack spacing={8} mx={"auto"} maxW={"2xl"} py={12} px={6}>
-          <Text fontSize={"lg"} color={"teal.400"}  justifyContent="center">
+          <Text fontSize={"lg"} color={"teal.400"} justifyContent="center">
             <ArrowBackIcon mr={2} />
             <NextLink href={`/campaign/${id}/requests`}>
               Back to Requests
@@ -81,20 +83,30 @@ export default function NewRequest() {
               <Stack spacing={4}>
                 <FormControl id="description">
                   <FormLabel>Request Description</FormLabel>
-                  <Input {...register("description")} />
+                  <Input
+                    {...register("description", { required: true })}
+                    isDisabled={formState.isSubmitting}
+                  />
                 </FormControl>
                 <FormControl id="value">
                   <FormLabel>Amount in Ether</FormLabel>
                   <InputGroup>
                     {" "}
-                    <Input type="number" {...register("value")} />{" "}
+                    <Input
+                      type="number"
+                      {...register("value", { required: true })}
+                      isDisabled={formState.isSubmitting}
+                    />{" "}
                     <InputRightAddon children="ETH" />
                   </InputGroup>
                 </FormControl>
 
                 <FormControl id="recipient">
                   <FormLabel>Recipient Ethereum Wallet Address</FormLabel>
-                  <Input {...register("recipient")} />
+                  <Input
+                    {...register("recipient", { required: true })}
+                    isDisabled={formState.isSubmitting}
+                  />
                 </FormControl>
                 {error ? (
                   <Alert status="error">
@@ -111,6 +123,7 @@ export default function NewRequest() {
                         bg: "teal.500",
                       }}
                       isLoading={formState.isSubmitting}
+                      isDisabled={!formState.isValid}
                       type="submit"
                     >
                       Create Withdrawal Request

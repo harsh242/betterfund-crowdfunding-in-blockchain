@@ -135,7 +135,9 @@ export default function CampaignSingle({
   target,
   ETHPrice,
 }) {
-  const { handleSubmit, register, formState, reset, getValues } = useForm();
+  const { handleSubmit, register, formState, reset, getValues } = useForm({
+    mode: "onChange",
+  });
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState("");
   const wallet = useWallet();
@@ -336,7 +338,7 @@ export default function CampaignSingle({
                   <Heading
                     lineHeight={1.1}
                     fontSize={{ base: "2xl", sm: "3xl" }}
-                    color={useColorModeValue("teal.600", "teal.400")}
+                    color={useColorModeValue("teal.600", "teal.200")}
                   >
                     Contribute Now!
                   </Heading>
@@ -350,7 +352,11 @@ export default function CampaignSingle({
                         </FormLabel>
                         <InputGroup>
                           {" "}
-                          <Input {...register("value")} />{" "}
+                          <Input
+                            {...register("value", { required: true })}
+                            type="number"
+                            isDisabled={formState.isSubmitting}
+                          />{" "}
                           <InputRightAddon children="ETH" />
                         </InputGroup>
                       </FormControl>
@@ -375,6 +381,7 @@ export default function CampaignSingle({
                               boxShadow: "xl",
                             }}
                             isLoading={formState.isSubmitting}
+                            isDisabled={!formState.isValid}
                             type="submit"
                           >
                             Contribute

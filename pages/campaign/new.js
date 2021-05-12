@@ -28,7 +28,9 @@ import { useRouter } from "next/router";
 import { useWallet } from "use-wallet";
 
 export default function NewCampaign() {
-  const { handleSubmit, errors, register, formState } = useForm();
+  const { handleSubmit, errors, register, formState } = useForm({
+    mode: "onChange",
+  });
   const router = useRouter();
   const [error, setError] = useState("");
   const wallet = useWallet();
@@ -72,7 +74,7 @@ export default function NewCampaign() {
       <main>
         <Stack spacing={8} mx={"auto"} maxW={"2xl"} py={12} px={6}>
           <Text fontSize={"lg"} color={"teal.400"}>
-            <ArrowBackIcon mr={2}/>
+            <ArrowBackIcon mr={2} />
             <NextLink href="/"> Back to Home</NextLink>
           </Text>
           <Stack>
@@ -92,27 +94,41 @@ export default function NewCampaign() {
                     {" "}
                     <Input
                       type="number"
-                      {...register("minimumContribution")}
+                      {...register("minimumContribution", { required: true })}
+                      isDisabled={formState.isSubmitting}
                     />{" "}
                     <InputRightAddon children="WEI" />
                   </InputGroup>
                 </FormControl>
                 <FormControl id="campaignName">
                   <FormLabel>Campaign Name</FormLabel>
-                  <Input {...register("campaignName")} />
+                  <Input
+                    {...register("campaignName", { required: true })}
+                    isDisabled={formState.isSubmitting}
+                  />
                 </FormControl>
                 <FormControl id="description">
                   <FormLabel>Campaign Description</FormLabel>
-                  <Input {...register("description")} />
+                  <Input
+                    {...register("description", { required: true })}
+                    isDisabled={formState.isSubmitting}
+                  />
                 </FormControl>
                 <FormControl id="imageUrl">
                   <FormLabel>Image URL</FormLabel>
-                  <Input {...register("imageUrl")} />
+                  <Input
+                    {...register("imageUrl", { required: true })}
+                    isDisabled={formState.isSubmitting}
+                  />
                 </FormControl>
                 <FormControl id="target">
                   <FormLabel>Target</FormLabel>
                   <InputGroup>
-                    <Input type="number" {...register("target")} />
+                    <Input
+                      type="number"
+                      {...register("target", { required: true })}
+                      isDisabled={formState.isSubmitting}
+                    />
                     <InputRightAddon children="WEI" />
                   </InputGroup>
                 </FormControl>
@@ -133,6 +149,7 @@ export default function NewCampaign() {
                         bg: "teal.500",
                       }}
                       isLoading={formState.isSubmitting}
+                      isDisabled={!formState.isValid}
                       type="submit"
                     >
                       Create
