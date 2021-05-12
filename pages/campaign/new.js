@@ -72,7 +72,7 @@ export default function NewCampaign() {
       <main>
         <Stack spacing={8} mx={"auto"} maxW={"2xl"} py={12} px={6}>
           <Text fontSize={"lg"} color={"teal.400"}>
-            <ArrowBackIcon />
+            <ArrowBackIcon mr={2}/>
             <NextLink href="/"> Back to Home</NextLink>
           </Text>
           <Stack>

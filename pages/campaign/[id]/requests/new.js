@@ -62,8 +62,8 @@ export default function NewRequest() {
       </Head>
       <main>
         <Stack spacing={8} mx={"auto"} maxW={"2xl"} py={12} px={6}>
-          <Text fontSize={"lg"} color={"teal.400"}>
-            <ArrowBackIcon />
+          <Text fontSize={"lg"} color={"teal.400"}  justifyContent="center">
+            <ArrowBackIcon mr={2} />
             <NextLink href={`/campaign/${id}/requests`}>
               Back to Requests
             </NextLink>

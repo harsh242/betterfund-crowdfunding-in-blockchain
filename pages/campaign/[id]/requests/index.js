@@ -30,7 +30,12 @@ import {
   HStack,
   Stack,
 } from "@chakra-ui/react";
-import { ArrowBackIcon, QuestionIcon, InfoIcon } from "@chakra-ui/icons";
+import {
+  ArrowBackIcon,
+  QuestionIcon,
+  InfoIcon,
+  CheckCircleIcon,
+} from "@chakra-ui/icons";
 import web3 from "../../../../smart-contract/web3";
 import Campaign from "../../../../smart-contract/campaign";
 import factory from "../../../../smart-contract/factory";
@@ -104,7 +109,19 @@ const RequestRow = ({ id, request, approversCount, campaignId, disabled }) => {
       </Td>
       <Td>
         {" "}
-        {request.complete ? null : (
+        {request.complete ? (
+          <Tooltip
+            label="This Request has been finalized & withdrawn to the recipient,then it may have more or less approvers"
+            bg={useColorModeValue("white", "gray.700")}
+            placement={"top"}
+            color={useColorModeValue("gray.800", "white")}
+            fontSize={"1em"}
+          >
+            <CheckCircleIcon
+              color={useColorModeValue("green.600", "green.300")}
+            />
+          </Tooltip>
+        ) : (
           <Button
             colorScheme="yellow"
             variant="outline"
@@ -113,7 +130,7 @@ const RequestRow = ({ id, request, approversCount, campaignId, disabled }) => {
               color: "white",
             }}
             onClick={onApprove}
-            isDisabled={!disabled}
+            isDisabled={disabled}
           >
             Approve
           </Button>
@@ -122,13 +139,15 @@ const RequestRow = ({ id, request, approversCount, campaignId, disabled }) => {
       <Td>
         {request.complete ? (
           <Tooltip
-            label="This Request has been finalized & withdrawn"
+            label="This Request has been finalized & withdrawn to the recipient,then it may have more or less approvers"
             bg={useColorModeValue("white", "gray.700")}
             placement={"top"}
             color={useColorModeValue("gray.800", "white")}
-            fontSize={"1.2em"}
+            fontSize={"1em"}
           >
-            <QuestionIcon />
+            <CheckCircleIcon
+              color={useColorModeValue("green.600", "green.300")}
+            />
           </Tooltip>
         ) : (
           <HStack spacing={2}>
@@ -139,7 +158,7 @@ const RequestRow = ({ id, request, approversCount, campaignId, disabled }) => {
                 bg: "green.600",
                 color: "white",
               }}
-              isDisabled={!disabled}
+              isDisabled={disabled || (!request.complete && !readyToFinalize)}
               onClick={onFinalize}
             >
               Finalize
@@ -171,7 +190,7 @@ export default function Requests({
 }) {
   const [requestsList, setRequestsList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isFundAvailable, setIsFundAvailable] = useState(false);
+  const [FundNotAvailable, setFundNotAvailable] = useState(false);
   const campaign = Campaign(campaignId);
   async function getRequests() {
     try {
@@ -193,8 +212,8 @@ export default function Requests({
   }
 
   useEffect(() => {
-    if (balance === 0) {
-      setIsFundAvailable(true);
+    if (balance == 0) {
+      setFundNotAvailable(true);
     }
     getRequests();
   }, []);
@@ -209,18 +228,18 @@ export default function Requests({
 
       <main>
         <Container px={{ base: "4", md: "12" }} maxW={"7xl"} align={"left"}>
-          <Box p="2">
+          <Box py="4">
             <Text fontSize={"lg"} color={"teal.400"}>
-              <ArrowBackIcon />
+              <ArrowBackIcon mr={2} />
               <NextLink href={`/campaign/${campaignId}`}>
                 Back to Campaign
               </NextLink>
             </Text>
           </Box>
-          {setIsFundAvailable ? (
+          {FundNotAvailable ? (
             <Alert status="error" my={4}>
               <AlertIcon />
-              <AlertDescription mr={2}>
+              <AlertDescription>
                 The Current Balance of the Campaign is 0, Please Contribute to
                 approve and finalize Requests.
               </AlertDescription>
@@ -290,7 +309,7 @@ export default function Requests({
                         request={request}
                         approversCount={approversCount}
                         campaignId={campaignId}
-                        disabled={isFundAvailable}
+                        disabled={FundNotAvailable}
                       />
                     );
                   })}
@@ -304,7 +323,7 @@ export default function Requests({
               px={{ base: "4", md: "12" }}
               maxW={"7xl"}
               align={"left"}
-              display={isLoading === 0 ? "block" : "none"}
+              display={isLoading ? "block" : "none"}
             >
               <SimpleGrid rows={{ base: 3 }} spacing={2}>
                 <Skeleton height="2rem" />
@@ -369,7 +388,7 @@ export default function Requests({
                   }}
                 >
                   <NextLink href={`/campaign/${campaignId}/`}>
-                    Back to Campaign
+                    Go to Campaign
                   </NextLink>
                 </Button>
               </SimpleGrid>
