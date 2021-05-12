@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useWallet } from "use-wallet";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
+import { useWindowSize } from "react-use";
 import {
   Box,
   Flex,
@@ -27,10 +28,12 @@ import {
   AlertDescription,
   Icon,
   Progress,
+  CloseButton,
 } from "@chakra-ui/react";
 import { FaCopy, FaTwitter } from "react-icons/fa";
 import { InfoIcon } from "@chakra-ui/icons";
 import NextLink from "next/link";
+import Confetti from "react-confetti";
 
 import web3 from "../../smart-contract/web3";
 import Campaign from "../../smart-contract/campaign";
@@ -123,10 +126,12 @@ export default function CampaignSingle({
   image,
   target,
 }) {
-  const { handleSubmit, errors, register, formState, reset } = useForm();
+  const { handleSubmit, register, formState, reset } = useForm();
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState("");
   const wallet = useWallet();
   const router = useRouter();
+  const { width, height } = useWindowSize();
   async function onSubmit(data) {
     console.log(data);
     try {
@@ -140,6 +145,8 @@ export default function CampaignSingle({
       reset("", {
         keepValues: false,
       });
+      setIsSubmitted(true);
+      setError(false);
     } catch (err) {
       setError(err.message);
       console.log(err);
@@ -153,9 +160,32 @@ export default function CampaignSingle({
         <meta name="description" content="Create a Withdrawal Request" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      {isSubmitted ? <Confetti width={width} height={height} /> : null}
       <main>
         {" "}
         <Box position={"relative"}>
+          {isSubmitted ? (
+            <Container
+              maxW={"7xl"}
+              columns={{ base: 1, md: 2 }}
+              spacing={{ base: 10, lg: 32 }}
+              py={{ base: 6 }}
+            >
+              <Alert status="success" mt="2">
+                <AlertIcon />
+                <AlertDescription mr={2}>
+                  {" "}
+                  Thank You for your Contribution 🙏
+                </AlertDescription>
+                <CloseButton
+                  position="absolute"
+                  right="8px"
+                  top="8px"
+                  onClick={() => setIsSubmitted(false)}
+                />
+              </Alert>
+            </Container>
+          ) : null}
           <Container
             as={SimpleGrid}
             maxW={"7xl"}
@@ -209,7 +239,7 @@ export default function CampaignSingle({
                 </SimpleGrid>
               </Box>
             </Stack>
-            <Stack maxW={{ lg: "lg" }} spacing={{ base: 4 }}>
+            <Stack spacing={{ base: 4 }}>
               <Stat
                 bg={useColorModeValue("white", "gray.700")}
                 boxShadow={"lg"}
