@@ -1,12 +1,10 @@
 import Head from "next/head";
 import {
-  Flex,
   Box,
   FormControl,
   FormLabel,
   Input,
   Stack,
-  Link,
   Button,
   Heading,
   Text,
@@ -16,13 +14,14 @@ import {
   Alert,
   AlertIcon,
   AlertDescription,
+  FormErrorMessage,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { useWallet } from "use-wallet";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 import web3 from "../../../../smart-contract/web3";
 import Campaign from "../../../../smart-contract/campaign";
@@ -35,7 +34,6 @@ export default function NewRequest() {
   });
   const [error, setError] = useState("");
   const wallet = useWallet();
-
   async function onSubmit(data) {
     console.log(data);
     const campaign = Campaign(id);
@@ -55,6 +53,7 @@ export default function NewRequest() {
       console.log(err);
     }
   }
+
   return (
     <div>
       <Head>
@@ -102,9 +101,14 @@ export default function NewRequest() {
                 </FormControl>
 
                 <FormControl id="recipient">
-                  <FormLabel>Recipient Ethereum Wallet Address</FormLabel>
+                  <FormLabel htmlFor="recipient">
+                    Recipient Ethereum Wallet Address
+                  </FormLabel>
                   <Input
-                    {...register("recipient", { required: true })}
+                    name="recipient"
+                    {...register("recipient", {
+                      required: true,
+                    })}
                     isDisabled={formState.isSubmitting}
                   />
                 </FormControl>
