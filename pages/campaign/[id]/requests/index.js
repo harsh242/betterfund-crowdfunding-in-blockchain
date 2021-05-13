@@ -3,10 +3,7 @@ import Head from "next/head";
 import NextLink from "next/link";
 import NextImage from "next/image";
 import { useRouter } from "next/router";
-import {
-  getETHPrice,
-  getWEIPriceInUSD,
-} from "../../../../lib/getETHPrice";
+import { getETHPrice, getWEIPriceInUSD } from "../../../../lib/getETHPrice";
 import {
   Heading,
   useBreakpointValue,
@@ -87,7 +84,6 @@ const RequestRow = ({
     await campaign.methods.approveRequest(id).send({
       from: accounts[0],
     });
-    router.push(`/campaign/${campaignId}/requests`);
   };
 
   const onFinalize = async () => {
@@ -96,7 +92,6 @@ const RequestRow = ({
     await campaign.methods.finalizeRequest(id).send({
       from: accounts[0],
     });
-    router.push(`/campaign/${campaignId}/requests`);
   };
 
   return (
@@ -141,7 +136,7 @@ const RequestRow = ({
               color: "white",
             }}
             onClick={onApprove}
-            isDisabled={disabled}
+            isDisabled={disabled || request.approvalCount == approversCount}
           >
             Approve
           </Button>
@@ -182,7 +177,10 @@ const RequestRow = ({
                 color={useColorModeValue("gray.800", "white")}
                 fontSize={"1.2em"}
               >
-                <InfoIcon color={useColorModeValue("teal.800", "white")} />
+                <InfoIcon
+                  as="span"
+                  color={useColorModeValue("teal.800", "white")}
+                />
               </Tooltip>
             ) : null}
           </HStack>

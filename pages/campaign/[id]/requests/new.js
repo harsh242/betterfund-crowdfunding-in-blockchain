@@ -23,6 +23,7 @@ import {
   AlertDescription,
   FormErrorMessage,
   FormHelperText,
+  Textarea,
 } from "@chakra-ui/react";
 import web3 from "../../../../smart-contract/web3";
 import Campaign from "../../../../smart-contract/campaign";
@@ -31,7 +32,11 @@ import { useAsync } from "react-use";
 export default function NewRequest() {
   const router = useRouter();
   const { id } = router.query;
-  const { handleSubmit, errors, register, formState } = useForm({
+  const {
+    handleSubmit,
+    register,
+    formState: { isSubmitting, errors },
+  } = useForm({
     mode: "onChange",
   });
   const [error, setError] = useState("");
@@ -94,9 +99,9 @@ export default function NewRequest() {
               <Stack spacing={4}>
                 <FormControl id="description">
                   <FormLabel>Request Description</FormLabel>
-                  <Input
+                  <Textarea
                     {...register("description", { required: true })}
-                    isDisabled={formState.isSubmitting}
+                    isDisabled={isSubmitting}
                   />
                 </FormControl>
                 <FormControl id="value">
@@ -106,10 +111,11 @@ export default function NewRequest() {
                     <Input
                       type="number"
                       {...register("value", { required: true })}
-                      isDisabled={formState.isSubmitting}
+                      isDisabled={isSubmitting}
                       onChange={(e) => {
                         setInUSD(Math.abs(e.target.value));
                       }}
+                      step="any"
                     />{" "}
                     <InputRightAddon children="ETH" />
                   </InputGroup>
@@ -129,9 +135,18 @@ export default function NewRequest() {
                     {...register("recipient", {
                       required: true,
                     })}
-                    isDisabled={formState.isSubmitting}
+                    isDisabled={isSubmitting}
                   />
                 </FormControl>
+                {errors.description || errors.value || errors.recipient ? (
+                  <Alert status="error">
+                    <AlertIcon />
+                    <AlertDescription mr={2}>
+                      {" "}
+                      All Fields are Required
+                    </AlertDescription>
+                  </Alert>
+                ) : null}
                 {error ? (
                   <Alert status="error">
                     <AlertIcon />
@@ -146,8 +161,7 @@ export default function NewRequest() {
                       _hover={{
                         bg: "teal.500",
                       }}
-                      isLoading={formState.isSubmitting}
-                      isDisabled={!formState.isValid}
+                      isLoading={isSubmitting}
                       type="submit"
                     >
                       Create Withdrawal Request

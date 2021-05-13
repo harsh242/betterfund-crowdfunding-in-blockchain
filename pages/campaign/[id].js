@@ -154,6 +154,7 @@ export default function CampaignSingle({
         value: web3.utils.toWei(data.value, "ether"),
       });
       router.push(`/campaign/${id}`);
+      setAmountInUSD(null);
       reset("", {
         keepValues: false,
       });
@@ -258,76 +259,79 @@ export default function CampaignSingle({
               </Box>
             </Stack>
             <Stack spacing={{ base: 4 }}>
-              <Stat
-                bg={useColorModeValue("white", "gray.700")}
-                boxShadow={"lg"}
-                rounded={"xl"}
-                p={{ base: 4, sm: 6, md: 8 }}
-                spacing={{ base: 8 }}
-              >
-                <StatLabel fontWeight={"medium"}>
-                  <Text as="span" isTruncated mr={2}>
-                    {" "}
-                    Campaign Balance
-                  </Text>
-                  <Tooltip
-                    label="The balance is how much money this campaign has left to
-                  spend."
-                    bg={useColorModeValue("white", "gray.700")}
-                    placement={"top"}
-                    color={useColorModeValue("gray.800", "white")}
-                    fontSize={"1em"}
-                    px="4"
-                  >
-                    <InfoIcon color={useColorModeValue("teal.800", "white")} />
-                  </Tooltip>
-                </StatLabel>
-                <StatNumber>
-                  <Box
-                    fontSize={"2xl"}
-                    isTruncated
-                    maxW={{ base: "	15rem", sm: "sm" }}
-                    pt="2"
-                  >
-                    <Text as="span" fontWeight={"bold"}>
-                      {balance > 0
-                        ? web3.utils.fromWei(balance, "ether")
-                        : "0, Become a Donor 😄"}
-                    </Text>
-                    <Text
-                      as="span"
-                      display={balance > 0 ? "inline" : "none"}
-                      pr={2}
-                      fontWeight={"bold"}
-                    >
+              <Box>
+                <Stat
+                  bg={useColorModeValue("white", "gray.700")}
+                  boxShadow={"lg"}
+                  rounded={"xl"}
+                  p={{ base: 4, sm: 6, md: 8 }}
+                  spacing={{ base: 8 }}
+                >
+                  <StatLabel fontWeight={"medium"}>
+                    <Text as="span" isTruncated mr={2}>
                       {" "}
-                      ETH
+                      Campaign Balance
                     </Text>
-                    <Text
-                      as="span"
-                      fontSize="lg"
-                      display={balance > 0 ? "inline" : "none"}
-                      fontWeight={"normal"}
-                      color={useColorModeValue("gray.500", "gray.200")}
+                    <Tooltip
+                      label="The balance is how much money this campaign has left to
+                  spend."
+                      bg={useColorModeValue("white", "gray.700")}
+                      placement={"top"}
+                      color={useColorModeValue("gray.800", "white")}
+                      fontSize={"1em"}
+                      px="4"
                     >
-                      (${getWEIPriceInUSD(ETHPrice, balance)})
+                      <InfoIcon
+                        color={useColorModeValue("teal.800", "white")}
+                      />
+                    </Tooltip>
+                  </StatLabel>
+                  <StatNumber>
+                    <Box
+                      fontSize={"2xl"}
+                      isTruncated
+                      maxW={{ base: "	15rem", sm: "sm" }}
+                      pt="2"
+                    >
+                      <Text as="span" fontWeight={"bold"}>
+                        {balance > 0
+                          ? web3.utils.fromWei(balance, "ether")
+                          : "0, Become a Donor 😄"}
+                      </Text>
+                      <Text
+                        as="span"
+                        display={balance > 0 ? "inline" : "none"}
+                        pr={2}
+                        fontWeight={"bold"}
+                      >
+                        {" "}
+                        ETH
+                      </Text>
+                      <Text
+                        as="span"
+                        fontSize="lg"
+                        display={balance > 0 ? "inline" : "none"}
+                        fontWeight={"normal"}
+                        color={useColorModeValue("gray.500", "gray.200")}
+                      >
+                        (${getWEIPriceInUSD(ETHPrice, balance)})
+                      </Text>
+                    </Box>
+
+                    <Text fontSize={"md"} fontWeight="normal">
+                      target of {web3.utils.fromWei(target, "ether")} ETH ($
+                      {getWEIPriceInUSD(ETHPrice, target)})
                     </Text>
-                  </Box>
-
-                  <Text fontSize={"md"} fontWeight="normal">
-                    target of {web3.utils.fromWei(target, "ether")} ETH ($
-                    {getWEIPriceInUSD(ETHPrice, target)})
-                  </Text>
-                  <Progress
-                    colorScheme="teal"
-                    size="sm"
-                    value={web3.utils.fromWei(balance, "ether")}
-                    max={web3.utils.fromWei(target, "ether")}
-                    mt={4}
-                  />
-                </StatNumber>
-              </Stat>
-
+                    <Progress
+                      colorScheme="teal"
+                      size="sm"
+                      value={web3.utils.fromWei(balance, "ether")}
+                      max={web3.utils.fromWei(target, "ether")}
+                      mt={4}
+                    />
+                  </StatNumber>
+                </Stat>
+              </Box>
               <Stack
                 bg={useColorModeValue("white", "gray.700")}
                 boxShadow={"lg"}
@@ -335,77 +339,75 @@ export default function CampaignSingle({
                 p={{ base: 4, sm: 6, md: 8 }}
                 spacing={{ base: 6 }}
               >
-                <Stack spacing={4}>
-                  <Heading
-                    lineHeight={1.1}
-                    fontSize={{ base: "2xl", sm: "3xl" }}
-                    color={useColorModeValue("teal.600", "teal.200")}
-                  >
-                    Contribute Now!
-                  </Heading>
-                </Stack>
+                <Heading
+                  lineHeight={1.1}
+                  fontSize={{ base: "2xl", sm: "3xl" }}
+                  color={useColorModeValue("teal.600", "teal.200")}
+                >
+                  Contribute Now!
+                </Heading>
+
                 <Box mt={10}>
-                  <Stack spacing={4}>
-                    <form onSubmit={handleSubmit(onSubmit)}>
-                      <FormControl id="value">
-                        <FormLabel>
-                          Amount in Ether you want to contribute
-                        </FormLabel>
-                        <InputGroup>
-                          {" "}
-                          <Input
-                            {...register("value", { required: true })}
-                            type="number"
-                            isDisabled={formState.isSubmitting}
-                            onChange={(e) => {
-                              setAmountInUSD(Math.abs(e.target.value));
-                            }}
-                          />{" "}
-                          <InputRightAddon children="ETH" />
-                        </InputGroup>
-                        {amountInUSD ? (
-                          <FormHelperText>
-                            ~$ {getETHPriceInUSD(ETHPrice, amountInUSD)}
-                          </FormHelperText>
-                        ) : null}
-                      </FormControl>
-
-                      {error ? (
-                        <Alert status="error" mt="2">
-                          <AlertIcon />
-                          <AlertDescription mr={2}> {error}</AlertDescription>
-                        </Alert>
+                  <form onSubmit={handleSubmit(onSubmit)}>
+                    <FormControl id="value">
+                      <FormLabel>
+                        Amount in Ether you want to contribute
+                      </FormLabel>
+                      <InputGroup>
+                        {" "}
+                        <Input
+                          {...register("value", { required: true })}
+                          type="number"
+                          isDisabled={formState.isSubmitting}
+                          onChange={(e) => {
+                            setAmountInUSD(Math.abs(e.target.value));
+                          }}
+                          step="any"
+                        />{" "}
+                        <InputRightAddon children="ETH" />
+                      </InputGroup>
+                      {amountInUSD ? (
+                        <FormHelperText>
+                          ~$ {getETHPriceInUSD(ETHPrice, amountInUSD)}
+                        </FormHelperText>
                       ) : null}
+                    </FormControl>
 
-                      <Stack spacing={10}>
-                        {wallet.status === "connected" ? (
-                          <Button
-                            fontFamily={"heading"}
-                            mt={4}
-                            w={"full"}
-                            bgGradient="linear(to-r, teal.400,green.400)"
-                            color={"white"}
-                            _hover={{
-                              bgGradient: "linear(to-r, teal.400,blue.400)",
-                              boxShadow: "xl",
-                            }}
-                            isLoading={formState.isSubmitting}
-                            isDisabled={!formState.isValid}
-                            type="submit"
-                          >
-                            Contribute
-                          </Button>
-                        ) : (
-                          <Alert status="warning" mt={4}>
-                            <AlertIcon />
-                            <AlertDescription mr={2}>
-                              Please Connect Your Wallet to Contribute
-                            </AlertDescription>
-                          </Alert>
-                        )}
-                      </Stack>
-                    </form>
-                  </Stack>
+                    {error ? (
+                      <Alert status="error" mt="2">
+                        <AlertIcon />
+                        <AlertDescription mr={2}> {error}</AlertDescription>
+                      </Alert>
+                    ) : null}
+
+                    <Stack spacing={10}>
+                      {wallet.status === "connected" ? (
+                        <Button
+                          fontFamily={"heading"}
+                          mt={4}
+                          w={"full"}
+                          bgGradient="linear(to-r, teal.400,green.400)"
+                          color={"white"}
+                          _hover={{
+                            bgGradient: "linear(to-r, teal.400,blue.400)",
+                            boxShadow: "xl",
+                          }}
+                          isLoading={formState.isSubmitting}
+                          isDisabled={!formState.isValid}
+                          type="submit"
+                        >
+                          Contribute
+                        </Button>
+                      ) : (
+                        <Alert status="warning" mt={4}>
+                          <AlertIcon />
+                          <AlertDescription mr={2}>
+                            Please Connect Your Wallet to Contribute
+                          </AlertDescription>
+                        </Alert>
+                      )}
+                    </Stack>
+                  </form>
                 </Box>
               </Stack>
 
@@ -414,29 +416,26 @@ export default function CampaignSingle({
                 boxShadow={"lg"}
                 rounded={"xl"}
                 p={{ base: 4, sm: 6, md: 8 }}
-                spacing={{ base: 8 }}
+                spacing={4}
               >
-                <Stack spacing={4}>
-                  <Button
-                    fontFamily={"heading"}
-                    w={"full"}
-                    bgGradient="linear(to-r, teal.400,green.400)"
-                    color={"white"}
-                    _hover={{
-                      bgGradient: "linear(to-r, teal.400,blue.400)",
-                      boxShadow: "xl",
-                    }}
-                  >
-                    <NextLink href={`/campaign/${id}/requests`}>
-                      View Withdrawal Requests
-                    </NextLink>
-                  </Button>
-                  <Text fontSize={"sm"}>
-                    * You can see where these funds are being used & if you have
-                    contributed you can also approve those Withdrawal Requests
-                    :)
-                  </Text>
-                </Stack>
+                <Button
+                  fontFamily={"heading"}
+                  w={"full"}
+                  bgGradient="linear(to-r, teal.400,green.400)"
+                  color={"white"}
+                  _hover={{
+                    bgGradient: "linear(to-r, teal.400,blue.400)",
+                    boxShadow: "xl",
+                  }}
+                >
+                  <NextLink href={`/campaign/${id}/requests`}>
+                    View Withdrawal Requests
+                  </NextLink>
+                </Button>
+                <Text fontSize={"sm"}>
+                  * You can see where these funds are being used & if you have
+                  contributed you can also approve those Withdrawal Requests :)
+                </Text>
               </Stack>
             </Stack>
           </Container>

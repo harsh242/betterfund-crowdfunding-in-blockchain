@@ -21,6 +21,7 @@ import {
   AlertIcon,
   AlertDescription,
   FormHelperText,
+  Textarea,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { ArrowBackIcon } from "@chakra-ui/icons";
@@ -30,7 +31,11 @@ import factory from "../../smart-contract/factory";
 import web3 from "../../smart-contract/web3";
 
 export default function NewCampaign() {
-  const { handleSubmit, errors, register, formState } = useForm({
+  const {
+    handleSubmit,
+    register,
+    formState: { isSubmitting, errors },
+  } = useForm({
     mode: "onChange",
   });
   const router = useRouter();
@@ -106,8 +111,9 @@ export default function NewCampaign() {
                     {" "}
                     <Input
                       type="number"
+                      step="any"
                       {...register("minimumContribution", { required: true })}
-                      isDisabled={formState.isSubmitting}
+                      isDisabled={isSubmitting}
                       onChange={(e) => {
                         setMinContriInUSD(Math.abs(e.target.value));
                       }}
@@ -124,21 +130,22 @@ export default function NewCampaign() {
                   <FormLabel>Campaign Name</FormLabel>
                   <Input
                     {...register("campaignName", { required: true })}
-                    isDisabled={formState.isSubmitting}
+                    isDisabled={isSubmitting}
                   />
                 </FormControl>
                 <FormControl id="description">
                   <FormLabel>Campaign Description</FormLabel>
-                  <Input
+                  <Textarea
                     {...register("description", { required: true })}
-                    isDisabled={formState.isSubmitting}
+                    isDisabled={isSubmitting}
                   />
                 </FormControl>
                 <FormControl id="imageUrl">
                   <FormLabel>Image URL</FormLabel>
                   <Input
                     {...register("imageUrl", { required: true })}
-                    isDisabled={formState.isSubmitting}
+                    isDisabled={isSubmitting}
+                    type="url"
                   />
                 </FormControl>
                 <FormControl id="target">
@@ -146,8 +153,9 @@ export default function NewCampaign() {
                   <InputGroup>
                     <Input
                       type="number"
+                      step="any"
                       {...register("target", { required: true })}
-                      isDisabled={formState.isSubmitting}
+                      isDisabled={isSubmitting}
                       onChange={(e) => {
                         setTargetInUSD(Math.abs(e.target.value));
                       }}
@@ -167,7 +175,19 @@ export default function NewCampaign() {
                     <AlertDescription mr={2}> {error}</AlertDescription>
                   </Alert>
                 ) : null}
-
+                {errors.minimumContribution ||
+                errors.name ||
+                errors.description ||
+                errors.imageUrl ||
+                errors.target ? (
+                  <Alert status="error">
+                    <AlertIcon />
+                    <AlertDescription mr={2}>
+                      {" "}
+                      All Fields are Required
+                    </AlertDescription>
+                  </Alert>
+                ) : null}
                 <Stack spacing={10}>
                   {wallet.status === "connected" ? (
                     <Button
@@ -176,8 +196,7 @@ export default function NewCampaign() {
                       _hover={{
                         bg: "teal.500",
                       }}
-                      isLoading={formState.isSubmitting}
-                      isDisabled={!formState.isValid}
+                      isLoading={isSubmitting}
                       type="submit"
                     >
                       Create
