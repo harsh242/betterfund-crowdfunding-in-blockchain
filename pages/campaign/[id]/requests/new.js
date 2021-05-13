@@ -1,4 +1,11 @@
 import Head from "next/head";
+import NextLink from "next/link";
+import { ArrowBackIcon } from "@chakra-ui/icons";
+import { useWallet } from "use-wallet";
+import { useForm } from "react-hook-form";
+import { useRouter } from "next/router";
+import { useState } from "react";
+import { getETHPrice, getETHPriceInUSD } from "../../../../lib/getETHPrice";
 import {
   Box,
   FormControl,
@@ -15,16 +22,11 @@ import {
   AlertIcon,
   AlertDescription,
   FormErrorMessage,
+  FormHelperText,
 } from "@chakra-ui/react";
-import NextLink from "next/link";
-import { ArrowBackIcon } from "@chakra-ui/icons";
-import { useWallet } from "use-wallet";
-import { useForm } from "react-hook-form";
-import { useRouter } from "next/router";
-import { useState } from "react";
-
 import web3 from "../../../../smart-contract/web3";
 import Campaign from "../../../../smart-contract/campaign";
+import { useAsync } from "react-use";
 
 export default function NewRequest() {
   const router = useRouter();
@@ -33,7 +35,17 @@ export default function NewRequest() {
     mode: "onChange",
   });
   const [error, setError] = useState("");
+  const [inUSD, setInUSD] = useState();
+  const [ETHPrice, setETHPrice] = useState(0);
   const wallet = useWallet();
+  useAsync(async () => {
+    try {
+      const result = await getETHPrice();
+      setETHPrice(result);
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
   async function onSubmit(data) {
     console.log(data);
     const campaign = Campaign(id);
@@ -95,9 +107,17 @@ export default function NewRequest() {
                       type="number"
                       {...register("value", { required: true })}
                       isDisabled={formState.isSubmitting}
+                      onChange={(e) => {
+                        setInUSD(Math.abs(e.target.value));
+                      }}
                     />{" "}
                     <InputRightAddon children="ETH" />
                   </InputGroup>
+                  {inUSD ? (
+                    <FormHelperText>
+                      ~$ {getETHPriceInUSD(ETHPrice, inUSD)}
+                    </FormHelperText>
+                  ) : null}
                 </FormControl>
 
                 <FormControl id="recipient">

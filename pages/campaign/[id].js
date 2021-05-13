@@ -140,6 +140,7 @@ export default function CampaignSingle({
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState("");
+  const [amountInUSD, setAmountInUSD] = useState();
   const wallet = useWallet();
   const router = useRouter();
   const { width, height } = useWindowSize();
@@ -356,9 +357,17 @@ export default function CampaignSingle({
                             {...register("value", { required: true })}
                             type="number"
                             isDisabled={formState.isSubmitting}
+                            onChange={(e) => {
+                              setAmountInUSD(Math.abs(e.target.value));
+                            }}
                           />{" "}
                           <InputRightAddon children="ETH" />
                         </InputGroup>
+                        {amountInUSD ? (
+                          <FormHelperText>
+                            ~$ {getETHPriceInUSD(ETHPrice, amountInUSD)}
+                          </FormHelperText>
+                        ) : null}
                       </FormControl>
 
                       {error ? (

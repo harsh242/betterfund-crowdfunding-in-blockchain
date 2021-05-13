@@ -1,5 +1,9 @@
 import React, { useState } from "react";
 import Head from "next/head";
+import { useAsync } from "react-use";
+import { useRouter } from "next/router";
+import { useWallet } from "use-wallet";
+import { useForm } from "react-hook-form";
 import {
   Flex,
   Box,
@@ -16,16 +20,14 @@ import {
   Alert,
   AlertIcon,
   AlertDescription,
+  FormHelperText,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { ArrowBackIcon } from "@chakra-ui/icons";
-import { useForm } from "react-hook-form";
+import { getETHPrice, getETHPriceInUSD } from "../../lib/getETHPrice";
 
 import factory from "../../smart-contract/factory";
 import web3 from "../../smart-contract/web3";
-
-import { useRouter } from "next/router";
-import { useWallet } from "use-wallet";
 
 export default function NewCampaign() {
   const { handleSubmit, errors, register, formState } = useForm({
@@ -34,7 +36,17 @@ export default function NewCampaign() {
   const router = useRouter();
   const [error, setError] = useState("");
   const wallet = useWallet();
-
+  const [minContriInUSD, setMinContriInUSD] = useState();
+  const [targetInUSD, setTargetInUSD] = useState();
+  const [ETHPrice, setETHPrice] = useState(0);
+  useAsync(async () => {
+    try {
+      const result = await getETHPrice();
+      setETHPrice(result);
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
   async function onSubmit(data) {
     console.log(
       data.minimumContribution,
@@ -47,11 +59,11 @@ export default function NewCampaign() {
       const accounts = await web3.eth.getAccounts();
       await factory.methods
         .createCampaign(
-          data.minimumContribution,
+          web3.utils.toWei(data.minimumContribution, "ether"),
           data.campaignName,
           data.description,
           data.imageUrl,
-          data.target
+          web3.utils.toWei(data.target, "ether")
         )
         .send({
           from: accounts[0],
@@ -89,16 +101,24 @@ export default function NewCampaign() {
             <form onSubmit={handleSubmit(onSubmit)}>
               <Stack spacing={4}>
                 <FormControl id="minimumContribution">
-                  <FormLabel>Minimum Contribution</FormLabel>
+                  <FormLabel>Minimum Contribution Amount</FormLabel>
                   <InputGroup>
                     {" "}
                     <Input
                       type="number"
                       {...register("minimumContribution", { required: true })}
                       isDisabled={formState.isSubmitting}
+                      onChange={(e) => {
+                        setMinContriInUSD(Math.abs(e.target.value));
+                      }}
                     />{" "}
-                    <InputRightAddon children="WEI" />
+                    <InputRightAddon children="ETH" />
                   </InputGroup>
+                  {minContriInUSD ? (
+                    <FormHelperText>
+                      ~$ {getETHPriceInUSD(ETHPrice, minContriInUSD)}
+                    </FormHelperText>
+                  ) : null}
                 </FormControl>
                 <FormControl id="campaignName">
                   <FormLabel>Campaign Name</FormLabel>
@@ -122,15 +142,23 @@ export default function NewCampaign() {
                   />
                 </FormControl>
                 <FormControl id="target">
-                  <FormLabel>Target</FormLabel>
+                  <FormLabel>Target Amount</FormLabel>
                   <InputGroup>
                     <Input
                       type="number"
                       {...register("target", { required: true })}
                       isDisabled={formState.isSubmitting}
+                      onChange={(e) => {
+                        setTargetInUSD(Math.abs(e.target.value));
+                      }}
                     />
-                    <InputRightAddon children="WEI" />
+                    <InputRightAddon children="ETH" />
                   </InputGroup>
+                  {targetInUSD ? (
+                    <FormHelperText>
+                      ~$ {getETHPriceInUSD(ETHPrice, targetInUSD)}
+                    </FormHelperText>
+                  ) : null}
                 </FormControl>
 
                 {error ? (
