@@ -315,14 +315,14 @@ export default function CampaignSingle({
                   </Box>
 
                   <Text fontSize={"md"} fontWeight="normal">
-                    target of {target} ETH ($
-                    {getETHPriceInUSD(ETHPrice, target)})
+                    target of {web3.utils.fromWei(target, "ether")} ETH ($
+                    {getWEIPriceInUSD(ETHPrice, target)})
                   </Text>
                   <Progress
                     colorScheme="teal"
                     size="sm"
                     value={web3.utils.fromWei(balance, "ether")}
-                    max={target}
+                    max={web3.utils.fromWei(target, "ether")}
                     mt={4}
                   />
                 </StatNumber>
