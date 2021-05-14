@@ -84,6 +84,7 @@ const RequestRow = ({
     await campaign.methods.approveRequest(id).send({
       from: accounts[0],
     });
+    router.push(`/campaign/${campaignId}/requests`);
   };
 
   const onFinalize = async () => {
@@ -92,6 +93,7 @@ const RequestRow = ({
     await campaign.methods.finalizeRequest(id).send({
       from: accounts[0],
     });
+    router.push(`/campaign/${campaignId}/requests`);
   };
 
   return (
