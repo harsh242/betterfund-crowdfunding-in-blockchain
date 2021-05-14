@@ -406,20 +406,20 @@ export default function CampaignSingle({
                 p={{ base: 4, sm: 6, md: 8 }}
                 spacing={4}
               >
-                <Button
-                  fontFamily={"heading"}
-                  w={"full"}
-                  bgGradient="linear(to-r, teal.400,green.400)"
-                  color={"white"}
-                  _hover={{
-                    bgGradient: "linear(to-r, teal.400,blue.400)",
-                    boxShadow: "xl",
-                  }}
-                >
-                  <NextLink href={`/campaign/${id}/requests`}>
+                <NextLink href={`/campaign/${id}/requests`}>
+                  <Button
+                    fontFamily={"heading"}
+                    w={"full"}
+                    bgGradient="linear(to-r, teal.400,green.400)"
+                    color={"white"}
+                    _hover={{
+                      bgGradient: "linear(to-r, teal.400,blue.400)",
+                      boxShadow: "xl",
+                    }}
+                  >
                     View Withdrawal Requests
-                  </NextLink>
-                </Button>
+                  </Button>
+                </NextLink>
                 <Text fontSize={"sm"}>
                   * You can see where these funds are being used & if you have
                   contributed you can also approve those Withdrawal Requests :)

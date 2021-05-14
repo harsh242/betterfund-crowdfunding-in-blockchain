@@ -344,23 +344,22 @@ export default function Requests({
               </Box>
               <Spacer />
               <Box py="2">
-                {" "}
-                <Button
-                  display={{ sm: "inline-flex" }}
-                  justify={"flex-end"}
-                  fontSize={"md"}
-                  fontWeight={600}
-                  color={"white"}
-                  bg={"teal.400"}
-                  href={"#"}
-                  _hover={{
-                    bg: "teal.300",
-                  }}
-                >
-                  <NextLink href={`/campaign/${campaignId}/requests/new`}>
+                <NextLink href={`/campaign/${campaignId}/requests/new`}>
+                  <Button
+                    display={{ sm: "inline-flex" }}
+                    justify={"flex-end"}
+                    fontSize={"md"}
+                    fontWeight={600}
+                    color={"white"}
+                    bg={"teal.400"}
+                    href={"#"}
+                    _hover={{
+                      bg: "teal.300",
+                    }}
+                  >
                     Add Withdrawal Request
-                  </NextLink>
-                </Button>
+                  </Button>
+                </NextLink>
               </Box>
             </Flex>{" "}
             <Box overflowX="auto">

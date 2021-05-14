@@ -184,7 +184,8 @@ function CampaignCard({
               </Box>
 
               <Text fontSize={"md"} fontWeight="normal">
-                target of {web3.utils.fromWei(target, "ether")} ETH (${getWEIPriceInUSD(ethPrice, target)})
+                target of {web3.utils.fromWei(target, "ether")} ETH ($
+                {getWEIPriceInUSD(ethPrice, target)})
               </Text>
               <Progress
                 colorScheme="teal"
@@ -249,18 +250,20 @@ export default function Home({ campaigns }) {
           >
             Crowdfunding using the powers of <br /> Crypto & Blockchain 😄{" "}
           </Heading>
-          <Button
-            display={{ sm: "inline-flex" }}
-            fontSize={"md"}
-            fontWeight={600}
-            color={"white"}
-            bg={"teal.400"}
-            _hover={{
-              bg: "teal.300",
-            }}
-          >
-            <NextLink href="/campaign/new">Create Campaign</NextLink>
-          </Button>
+          <NextLink href="/campaign/new">
+            <Button
+              display={{ sm: "inline-flex" }}
+              fontSize={"md"}
+              fontWeight={600}
+              color={"white"}
+              bg={"teal.400"}
+              _hover={{
+                bg: "teal.300",
+              }}
+            >
+              Create Campaign
+            </Button>
+          </NextLink>
         </Container>
         <Container py={{ base: "4", md: "12" }} maxW={"7xl"}>
           <HStack spacing={2}>
