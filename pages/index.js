@@ -2,11 +2,7 @@ import Head from "next/head";
 import { useEffect, useState } from "react";
 import NextLink from "next/link";
 import styles from "../styles/Home.module.css";
-import {
-  getETHPrice,
-  getETHPriceInUSD,
-  getWEIPriceInUSD,
-} from "../lib/getETHPrice";
+import { getETHPrice, getWEIPriceInUSD } from "../lib/getETHPrice";
 import {
   Heading,
   useBreakpointValue,
@@ -23,7 +19,7 @@ import {
   Icon,
   chakra,
   Tooltip,
-  Spinner,
+  Link,
   SkeletonCircle,
   HStack,
   Stack,
@@ -33,7 +29,7 @@ import {
 import factory from "../smart-contract/factory";
 import web3 from "../smart-contract/web3";
 import Campaign from "../smart-contract/campaign";
-
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { FaHandshake } from "react-icons/fa";
 import { FcShare, FcDonate, FcMoneyTransfer } from "react-icons/fc";
 
@@ -333,6 +329,17 @@ export default function Home({ campaigns }) {
               }
             />
           </SimpleGrid>
+          <Heading as="h2" size="lg" mt="8">
+            For any queries raise an issue on{" "}
+            <Link
+              color="teal.500"
+              href="https://github.com/harsh242/betterfund-crowdfunding-in-blockchain/issues"
+              isExternal
+            >
+              the Github Repo <ExternalLinkIcon mx="2px" />
+            </Link>{" "}
+          </Heading>
+          <Divider marginTop="4" />
         </Container>
       </main>
     </div>

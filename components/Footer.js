@@ -30,6 +30,8 @@ const SocialButton = ({ children, label, href }) => {
       _hover={{
         bg: useColorModeValue("blackAlpha.200", "whiteAlpha.200"),
       }}
+      target="_blank"
+      rel="noopener noreferrer"
     >
       <VisuallyHidden>{label}</VisuallyHidden>
       {children}
@@ -83,10 +85,13 @@ export default function Footer() {
             href={
               "https://github.com/harsh242/betterfund-crowdfunding-in-blockchain"
             }
+            isExternal
           >
             Github
           </Link>
-          <Link href={"mailto:harshbadhai242@gmail.com"}>Contact</Link>
+          <Link href={"mailto:harshbadhai242@gmail.com"} isExternal>
+            Contact
+          </Link>
         </Stack>
       </Container>
 
