@@ -45,19 +45,7 @@ import web3 from "../../smart-contract/web3";
 import Campaign from "../../smart-contract/campaign";
 import factory from "../../smart-contract/factory";
 
-export async function getStaticPaths() {
-  const campaigns = await factory.methods.getDeployedCampaigns().call();
-
-  console.log(campaigns);
-  const paths = campaigns.map((campaign, i) => ({
-    params: { id: campaigns[i] },
-  }));
-  console.log("paths", paths);
-
-  return { paths, fallback: false };
-}
-
-export async function getStaticProps({ params }) {
+export async function getServerSideProps({ params }) {
   const campaignId = params.id;
   const campaign = Campaign(campaignId);
   const summary = await campaign.methods.getSummary().call();

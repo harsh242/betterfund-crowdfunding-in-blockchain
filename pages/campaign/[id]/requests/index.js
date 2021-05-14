@@ -31,24 +31,17 @@ import {
   HStack,
   Stack,
 } from "@chakra-ui/react";
-import { ArrowBackIcon, InfoIcon, CheckCircleIcon } from "@chakra-ui/icons";
+import {
+  ArrowBackIcon,
+  InfoIcon,
+  CheckCircleIcon,
+  WarningIcon,
+} from "@chakra-ui/icons";
 import web3 from "../../../../smart-contract/web3";
 import Campaign from "../../../../smart-contract/campaign";
 import factory from "../../../../smart-contract/factory";
 
-export async function getStaticPaths() {
-  const campaigns = await factory.methods.getDeployedCampaigns().call();
-
-  console.log(campaigns);
-  const paths = campaigns.map((campaign, i) => ({
-    params: { id: campaigns[i] },
-  }));
-  console.log("paths", paths);
-
-  return { paths, fallback: false };
-}
-
-export async function getStaticProps({ params }) {
+export async function getServerSideProps({ params }) {
   const campaignId = params.id;
   const campaign = Campaign(campaignId);
   const requestCount = await campaign.methods.getRequestsCount().call();
@@ -78,22 +71,40 @@ const RequestRow = ({
 }) => {
   const router = useRouter();
   const readyToFinalize = request.approvalCount > approversCount / 2;
+  const [errorMessageApprove, setErrorMessageApprove] = useState();
+  const [loadingApprove, setLoadingApprove] = useState(false);
+  const [errorMessageFinalize, setErrorMessageFinalize] = useState();
+  const [loadingFinalize, setLoadingFinalize] = useState(false);
   const onApprove = async () => {
-    const campaign = Campaign(campaignId);
-    const accounts = await web3.eth.getAccounts();
-    await campaign.methods.approveRequest(id).send({
-      from: accounts[0],
-    });
-    router.reload();
+    setLoadingApprove(true);
+    try {
+      const campaign = Campaign(campaignId);
+      const accounts = await web3.eth.getAccounts();
+      await campaign.methods.approveRequest(id).send({
+        from: accounts[0],
+      });
+      router.reload();
+    } catch (err) {
+      setErrorMessageApprove(err.message);
+    } finally {
+      setLoadingApprove(false);
+    }
   };
 
   const onFinalize = async () => {
-    const campaign = Campaign(campaignId);
-    const accounts = await web3.eth.getAccounts();
-    await campaign.methods.finalizeRequest(id).send({
-      from: accounts[0],
-    });
-    router.reload();
+    setLoadingFinalize(true);
+    try {
+      const campaign = Campaign(campaignId);
+      const accounts = await web3.eth.getAccounts();
+      await campaign.methods.finalizeRequest(id).send({
+        from: accounts[0],
+      });
+      router.reload();
+    } catch (err) {
+      setErrorMessageFinalize(err.message);
+    } finally {
+      setLoadingFinalize(false);
+    }
   };
 
   return (
@@ -116,35 +127,62 @@ const RequestRow = ({
         {request.approvalCount}/{approversCount}
       </Td>
       <Td>
-        {" "}
-        {request.complete ? (
+        <HStack spacing={2}>
           <Tooltip
-            label="This Request has been finalized & withdrawn to the recipient,then it may have more or less approvers"
+            label={errorMessageApprove}
             bg={useColorModeValue("white", "gray.700")}
             placement={"top"}
             color={useColorModeValue("gray.800", "white")}
             fontSize={"1em"}
           >
-            <CheckCircleIcon
-              color={useColorModeValue("green.600", "green.300")}
+            <WarningIcon
+              color={useColorModeValue("red.600", "red.300")}
+              display={errorMessageApprove ? "inline-block" : "none"}
             />
           </Tooltip>
-        ) : (
-          <Button
-            colorScheme="yellow"
-            variant="outline"
-            _hover={{
-              bg: "yellow.600",
-              color: "white",
-            }}
-            onClick={onApprove}
-            isDisabled={disabled || request.approvalCount == approversCount}
-          >
-            Approve
-          </Button>
-        )}
+          {request.complete ? (
+            <Tooltip
+              label="This Request has been finalized & withdrawn to the recipient,then it may have more or less approvers"
+              bg={useColorModeValue("white", "gray.700")}
+              placement={"top"}
+              color={useColorModeValue("gray.800", "white")}
+              fontSize={"1em"}
+            >
+              <CheckCircleIcon
+                color={useColorModeValue("green.600", "green.300")}
+              />
+            </Tooltip>
+          ) : (
+            <Button
+              colorScheme="yellow"
+              variant="outline"
+              _hover={{
+                bg: "yellow.600",
+                color: "white",
+              }}
+              onClick={onApprove}
+              isDisabled={disabled || request.approvalCount == approversCount}
+              isLoading={loadingApprove}
+            >
+              Approve
+            </Button>
+          )}
+        </HStack>
       </Td>
       <Td>
+        <Tooltip
+          label={errorMessageFinalize}
+          bg={useColorModeValue("white", "gray.700")}
+          placement={"top"}
+          color={useColorModeValue("gray.800", "white")}
+          fontSize={"1em"}
+        >
+          <WarningIcon
+            color={useColorModeValue("red.600", "red.300")}
+            display={errorMessageFinalize ? "inline-block" : "none"}
+            mr="2"
+          />
+        </Tooltip>
         {request.complete ? (
           <Tooltip
             label="This Request has been finalized & withdrawn to the recipient,then it may have more or less approvers"
@@ -168,23 +206,26 @@ const RequestRow = ({
               }}
               isDisabled={disabled || (!request.complete && !readyToFinalize)}
               onClick={onFinalize}
+              isLoading={loadingFinalize}
             >
               Finalize
             </Button>
-            {readyToFinalize && !request.complete ? (
-              <Tooltip
-                label="This Request is ready to be Finalized because it has been approved by 50% Approvers"
-                bg={useColorModeValue("white", "gray.700")}
-                placement={"top"}
-                color={useColorModeValue("gray.800", "white")}
-                fontSize={"1.2em"}
-              >
-                <InfoIcon
-                  as="span"
-                  color={useColorModeValue("teal.800", "white")}
-                />
-              </Tooltip>
-            ) : null}
+
+            <Tooltip
+              label="This Request is ready to be Finalized because it has been approved by 50% Approvers"
+              bg={useColorModeValue("white", "gray.700")}
+              placement={"top"}
+              color={useColorModeValue("gray.800", "white")}
+              fontSize={"1.2em"}
+            >
+              <InfoIcon
+                as="span"
+                color={useColorModeValue("teal.800", "white")}
+                display={
+                  readyToFinalize && !request.complete ? "inline-block" : "none"
+                }
+              />
+            </Tooltip>
           </HStack>
         )}
       </Td>
@@ -240,14 +281,43 @@ export default function Requests({
 
       <main>
         <Container px={{ base: "4", md: "12" }} maxW={"7xl"} align={"left"}>
-          <Box py="4">
-            <Text fontSize={"lg"} color={"teal.400"}>
-              <ArrowBackIcon mr={2} />
-              <NextLink href={`/campaign/${campaignId}`}>
-                Back to Campaign
-              </NextLink>
-            </Text>
-          </Box>
+          <Flex flexDirection={{ base: "column", md: "row" }} py={4}>
+            <Box py="4">
+              <Text fontSize={"lg"} color={"teal.400"}>
+                <ArrowBackIcon mr={2} />
+                <NextLink href={`/campaign/${campaignId}`}>
+                  Back to Campaign
+                </NextLink>
+              </Text>
+            </Box>
+            <Spacer />
+            <Box py="4">
+              Campaign Balance :{" "}
+              <Text as="span" fontWeight={"bold"} fontSize="lg">
+                {balance > 0
+                  ? web3.utils.fromWei(balance, "ether")
+                  : "0, Become a Donor 😄"}
+              </Text>
+              <Text
+                as="span"
+                display={balance > 0 ? "inline" : "none"}
+                pr={2}
+                fontWeight={"bold"}
+                fontSize="lg"
+              >
+                {" "}
+                ETH
+              </Text>
+              <Text
+                as="span"
+                display={balance > 0 ? "inline" : "none"}
+                fontWeight={"normal"}
+                color={useColorModeValue("gray.500", "gray.200")}
+              >
+                (${getWEIPriceInUSD(ETHPrice, balance)})
+              </Text>
+            </Box>
+          </Flex>
           {FundNotAvailable ? (
             <Alert status="error" my={4}>
               <AlertIcon />
@@ -260,8 +330,8 @@ export default function Requests({
         </Container>
         {requestsList.length > 0 ? (
           <Container px={{ base: "4", md: "12" }} maxW={"7xl"} align={"left"}>
-            <Flex flexDirection={{ base: "column", md: "row" }} py={4}>
-              <Box p="2">
+            <Flex flexDirection={{ base: "column", lg: "row" }} py={4}>
+              <Box py="2">
                 <Heading
                   textAlign={useBreakpointValue({ base: "left" })}
                   fontFamily={"heading"}
@@ -273,7 +343,7 @@ export default function Requests({
                 </Heading>
               </Box>
               <Spacer />
-              <Box p="2">
+              <Box py="2">
                 {" "}
                 <Button
                   display={{ sm: "inline-flex" }}
@@ -293,12 +363,8 @@ export default function Requests({
                 </Button>
               </Box>
             </Flex>{" "}
-            <Divider />
             <Box overflowX="auto">
               <Table>
-                <TableCaption textAlign="left">
-                  Found {requestCount} Requests
-                </TableCaption>
                 <Thead>
                   <Tr>
                     <Th>ID</Th>
@@ -327,6 +393,9 @@ export default function Requests({
                     );
                   })}
                 </Tbody>
+                <TableCaption textAlign="left" ml="-2">
+                  Found {requestCount} Requests
+                </TableCaption>
               </Table>
             </Box>
           </Container>

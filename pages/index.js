@@ -37,7 +37,7 @@ import Campaign from "../smart-contract/campaign";
 import { FaHandshake } from "react-icons/fa";
 import { FcShare, FcDonate, FcMoneyTransfer } from "react-icons/fc";
 
-export async function getStaticProps(context) {
+export async function getServerSideProps(context) {
   const campaigns = await factory.methods.getDeployedCampaigns().call();
 
   console.log(campaigns);
