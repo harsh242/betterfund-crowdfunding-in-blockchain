@@ -30,6 +30,7 @@ import {
   AlertDescription,
   HStack,
   Stack,
+  Link,
 } from "@chakra-ui/react";
 import {
   ArrowBackIcon,
@@ -122,7 +123,16 @@ const RequestRow = ({
         {web3.utils.fromWei(request.value, "ether")}ETH ($
         {getWEIPriceInUSD(ETHPrice, request.value)})
       </Td>
-      <Td>{request.recipient.substr(0, 10) + "..."}</Td>
+      <Td>
+        <Link
+          color="teal.500"
+          href={`https://rinkeby.etherscan.io/address/${request.recipient}`}
+          isExternal
+        >
+          {" "}
+          {request.recipient.substr(0, 10) + "..."}
+        </Link>
+      </Td>
       <Td>
         {request.approvalCount}/{approversCount}
       </Td>

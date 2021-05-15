@@ -31,13 +31,13 @@ import {
   Alert,
   AlertIcon,
   AlertDescription,
-  Icon,
   Progress,
   CloseButton,
   FormHelperText,
+  Link,
 } from "@chakra-ui/react";
 
-import { InfoIcon } from "@chakra-ui/icons";
+import { InfoIcon, ExternalLinkIcon } from "@chakra-ui/icons";
 import NextLink from "next/link";
 import Confetti from "react-confetti";
 
@@ -207,6 +207,13 @@ export default function CampaignSingle({
               >
                 {description}
               </Text>
+              <Link
+                color="teal.500"
+                href={`https://rinkeby.etherscan.io/address/${id}`}
+                isExternal
+              >
+                View on Rinkeby Etherscan <ExternalLinkIcon mx="2px" />
+              </Link>
               <Box mx={"auto"} w={"full"}>
                 <SimpleGrid columns={{ base: 1 }} spacing={{ base: 5 }}>
                   <StatsCard
