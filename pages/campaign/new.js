@@ -86,7 +86,7 @@ export default function NewCampaign() {
       <Head>
         <title>New Campaign</title>
         <meta name="description" content="Create New Campaign" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/logo.svg" />
       </Head>
       <main>
         <Stack spacing={8} mx={"auto"} maxW={"2xl"} py={12} px={6}>

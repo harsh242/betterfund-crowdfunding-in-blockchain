@@ -76,7 +76,7 @@ export default function NewRequest() {
       <Head>
         <title>Create a Withdrawal Request</title>
         <meta name="description" content="Create a Withdrawal Request" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/logo.svg" />
       </Head>
       <main>
         <Stack spacing={8} mx={"auto"} maxW={"2xl"} py={12} px={6}>

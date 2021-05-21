@@ -159,7 +159,7 @@ export default function CampaignSingle({
       <Head>
         <title>Campaign Details</title>
         <meta name="description" content="Create a Withdrawal Request" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/logo.svg" />
       </Head>
       {isSubmitted ? <Confetti width={width} height={height} /> : null}
       <main>

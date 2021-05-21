@@ -14,7 +14,6 @@ import {
   Container,
   SimpleGrid,
   Box,
-  Divider,
   Spacer,
   Table,
   Thead,
@@ -286,7 +285,7 @@ export default function Requests({
       <Head>
         <title>Campaign Withdrawal Requests</title>
         <meta name="description" content="Create a Withdrawal Request" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/logo.svg" />
       </Head>
 
       <main>
