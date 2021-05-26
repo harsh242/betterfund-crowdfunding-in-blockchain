@@ -358,6 +358,7 @@ export default function CampaignSingle({
                             setAmountInUSD(Math.abs(e.target.value));
                           }}
                           step="any"
+                          min="0"
                         />{" "}
                         <InputRightAddon children="ETH" />
                       </InputGroup>
@@ -388,7 +389,7 @@ export default function CampaignSingle({
                             boxShadow: "xl",
                           }}
                           isLoading={formState.isSubmitting}
-                          isDisabled={!formState.isValid}
+                          isDisabled={amountInUSD ? false : true}
                           type="submit"
                         >
                           Contribute
