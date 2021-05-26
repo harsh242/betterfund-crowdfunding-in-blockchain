@@ -347,6 +347,7 @@ export default function Requests({
                   color={useColorModeValue("gray.800", "white")}
                   as="h3"
                   isTruncated
+                  maxW={"3xl"}
                 >
                   Withdrawal Requests for {name} Campaign
                 </Heading>
@@ -417,6 +418,7 @@ export default function Requests({
             >
               <SimpleGrid rows={{ base: 3 }} spacing={2}>
                 <Skeleton height="2rem" />
+                <Skeleton height="5rem" />
                 <Skeleton height="5rem" />
                 <Skeleton height="5rem" />
               </SimpleGrid>
