@@ -151,7 +151,7 @@ const RequestRow = ({
           </Tooltip>
           {request.complete ? (
             <Tooltip
-              label="This Request has been finalized & withdrawn to the recipient,then it may have more or less approvers"
+              label="This Request has been finalized & withdrawn to the recipient,it may then have less no of approvers"
               bg={useColorModeValue("white", "gray.700")}
               placement={"top"}
               color={useColorModeValue("gray.800", "white")}
@@ -194,7 +194,7 @@ const RequestRow = ({
         </Tooltip>
         {request.complete ? (
           <Tooltip
-            label="This Request has been finalized & withdrawn to the recipient,then it may have more or less approvers"
+              label="This Request has been finalized & withdrawn to the recipient,it may then have less no of approvers"
             bg={useColorModeValue("white", "gray.700")}
             placement={"top"}
             color={useColorModeValue("gray.800", "white")}
@@ -340,7 +340,7 @@ export default function Requests({
         {requestsList.length > 0 ? (
           <Container px={{ base: "4", md: "12" }} maxW={"7xl"} align={"left"}>
             <Flex flexDirection={{ base: "column", lg: "row" }} py={4}>
-              <Box py="2">
+              <Box py="2" pr="2">
                 <Heading
                   textAlign={useBreakpointValue({ base: "left" })}
                   fontFamily={"heading"}
