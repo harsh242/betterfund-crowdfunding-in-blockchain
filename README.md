@@ -1,5 +1,6 @@
 BetterFund : Crowdfunding Platform Powered by Ethereum Blockchain
-The Platform is live and available to use at : [betterfund.vercel.app](https://betterfund.vercel.app/)
+
+The Platform is live on Rinkeby Test Network and available to use at : [betterfund.vercel.app](https://betterfund.vercel.app/)
 
 ## Problem Statement and Necessity 
 Crowdfunding is one of the most popular ways to raise funds for any project, cause or for helping any individual in need. With the onset of Covid we have seen a rise in Crowdfunding activities across the globe which includes small campaigns to help people get oxygen and medical help to large funds such as PM Cares.
@@ -11,7 +12,7 @@ The major problems with the Current Crowdfunding Platforms that we wanted to sol
 
 We were highly inspired by the CryptoRelief initiative ([www.cryptorelief.in](https://www.cryptorelief.in))  which raised ~1 billion dollars for Covid Relief in India from the entire global community, in a highly transparent manner. 
 
-### Detailed Report and PPT
+## Detailed Report and PPT
 - A Detailed Report of the Project can be [found here](https://docs.google.com/document/d/1_CdJ5pEimTrejDSBnq9Ze6kz2BcKJ6qtiikqWs0rglc/edit?usp=sharing)
 - A Presentation on the Application can be [found here](https://docs.google.com/presentation/d/1X5CMPB_Mece3C7NI5dvB7eTKJjbn0E70NY3pjVZn5ho/edit?usp=sharing)
 
