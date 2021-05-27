@@ -1,31 +1,66 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+BetterFund : Crowdfunding Platform Powered by Ethereum Blockchain
+The Platform is live and available to use at : [betterfund.vercel.app](https://betterfund.vercel.app/)
 
-## Getting Started
+## Problem Statement and Necessity 
+Crowdfunding is one of the most popular ways to raise funds for any project, cause or for helping any individual in need. With the onset of Covid we have seen a rise in Crowdfunding activities across the globe which includes small campaigns to help people get oxygen and medical help to large funds such as PM Cares.
 
-First, run the development server:
+The major problems with the Current Crowdfunding Platforms that we wanted to solve were : 
+- Security : As the funds become larger, they need to be heavily secure, although stringent measures such as symmetric encryption are in place to make e-payment safe and secure,it is still vulnerable to hacking. Blockchain — which has never been compromised yet — can provide that level of security.
+- Transparency and Anti-Fraud  : We have seen, and continue to see a lot of crowdfunding scams happening around. There is no way to see where the funds are being used. We wanted to make the entire flow of funds transparent at every stage, so that there is no possibility of the money being misused.
+- Global contribution : With some of the platforms being country specific, it becomes hard for people from other countries to contribute to various campaigns. Using blockchain anyone in the world can contribute to the campaign. Transactions are quick and convenient.
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+We were highly inspired by the CryptoRelief initiative ([www.cryptorelief.in](https://www.cryptorelief.in))  which raised ~1 billion dollars for Covid Relief in India from the entire global community, in a highly transparent manner. 
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Detailed Report and PPT
+- A Detailed Report of the Project can be [found here](https://docs.google.com/document/d/1_CdJ5pEimTrejDSBnq9Ze6kz2BcKJ6qtiikqWs0rglc/edit?usp=sharing)
+- A Presentation on the Application can be [found here](https://docs.google.com/presentation/d/1X5CMPB_Mece3C7NI5dvB7eTKJjbn0E70NY3pjVZn5ho/edit?usp=sharing)
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+## Screenshots 
+#### Home Page :
+![image](https://user-images.githubusercontent.com/49694914/119785319-ba2cf580-beec-11eb-92f4-73c5d686e058.png)
+### Campaign Page :
+![image](https://user-images.githubusercontent.com/49694914/119785442-d2047980-beec-11eb-8cfd-ac246582a4af.png)
+### Create Campaign Page :
+![image](https://user-images.githubusercontent.com/49694914/119785522-e47eb300-beec-11eb-88f8-8cc65a7c42ec.png)
+### Withdrawal Request Page :
+![image](https://user-images.githubusercontent.com/49694914/119785617-ff512780-beec-11eb-961a-b7857665f031.png)
+### New Withdrawal Request Page :
+![image](https://user-images.githubusercontent.com/49694914/119785671-0d06ad00-beed-11eb-9554-6786c58cc19d.png)
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
 
-## Learn More
+## Tech Stack 
+- Next JS
+- Chakra UI
+- Solidity
+- Web3.js
 
-To learn more about Next.js, take a look at the following resources:
+## To run the application locally
+- Fork the Project 
+- run `yarn install` to install all the dependencies
+- run `yarn dev` to run the application locally
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Prerequisites to create Campaign and Contribute
+1. Install **Metamask** as Google Chrome Extension and Create an account.
+2.  Request Ether by sharing your ethereum address in social media <br>(`https://faucet.rinkeby.io/)`
+3. Get 0.01 ether free by giving the ethereum address <br>`(http://rinkeby-faucet.com/)`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## To Deploy your own Contract 
+1. Create an account in [https://infura.io](https://infura.io/)
+2. Create .env file in Ethereum directory and add these line to it.
+	> mnemonic = 'Your mnemonic code' <br>
+	link = 'Your infura end point link '
+3. Do the Changes that you want to do inside the Solidity File
+4. Compile the Contract 
+  `node compile.js`
+5. Deploy Contract by going into smart-contract Directory and run.
+	`node deploy.js`
+	
+   Copy the contract deploy address and replace it in factory.js file.
+  
+  
+6. Replace your "infura end point link" in web3.js file
+
 
 ## Deploy on Vercel
 
